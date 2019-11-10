@@ -27,7 +27,9 @@ SECRET_KEY = '%2tuoxn-^r&=i8ug37g6$+x-tnefce19wav36srs3)#pt6@w1('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+
 AUTH_USER_MODEL = "accounts.FcUser"
 
 ACCOUNT_USERNAME_REQUIRED = False
@@ -101,7 +103,7 @@ WSGI_APPLICATION = 'findcleaner.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase',
+        'NAME': 'findcleaner',
     }
 }
 
