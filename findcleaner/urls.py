@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 schema_view = get_swagger_view(title='FindCleaner API')
 
@@ -27,3 +28,5 @@ urlpatterns = [
     path('customers/', include("customers.urls")),
     path('services/', include("services.urls")),
 ]
+urlpatterns += staticfiles_urlpatterns()
+
