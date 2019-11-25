@@ -12,8 +12,7 @@ class NewServiceRequestSchedule(generics.CreateAPIView):
 
 class NewRequestView(generics.ListAPIView):
     """
-       Search employee by passing 'search' = 'fieldname' as url param, you can pass firstname, lastname, middlename or employee username.
-       This view also support ordering of fields by passing 'ordering' = 'fieldname'
+
     """
     serializer_class = FcServiceProviderSerializer
     # permission_classes = (permissions.IsAuthenticated,)

@@ -7,8 +7,8 @@ from django.conf import settings
 from django.db import transaction
 from customers.models import FcCustomer
 from providers.models import FcProvider
-
 from allauth.account.utils import send_email_confirmation
+
 
 
 class FcPasswordResetSerializer(PasswordResetSerializer):
@@ -76,7 +76,10 @@ class FcRegisterSerializer(serializers.ModelSerializer):
                 provider_info = FcProvider.objects.create(user=user)
                 provider_info.save()
 
-
+            request = self.context.get("request")
+            print('before sending mail')
+            send_email_confirmation(request, user, True)
+            print('after sending mail')
 
             return user
 

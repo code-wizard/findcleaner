@@ -59,6 +59,9 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
 
     objects = MyUserManager()
 
+    def get_user_type(self):
+        return self.account_type
+
     class Meta:
         db_table = "fc_user"
         verbose_name = _("User")

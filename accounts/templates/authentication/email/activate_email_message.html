@@ -1,0 +1,19 @@
+Hi {{ user.get_full_name }},<br/><br/>
+
+Your account has been created with the following credentials:<br><br>
+email: {{ user.email }}<br>
+{% if user_password %}
+    password: {{ user_password }} <br><br>
+{% else %}
+    password: "as provided while signing up" <br><br>
+{% endif %}
+
+Click the activation link below or copy and paste it in your browser to activate your account:<br>
+activation link: {{ activate_url }}<br><br>
+
+{% if user_password %}
+    You are advice to change your password once you login<br><br>
+{% endif %}
+
+Thanks
+

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import datetime
 
 from decouple import config, Csv
 
@@ -166,22 +167,47 @@ STATIC_URL = '/static/'
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailAuthBackend',
     # 'accounts.backends.EmailAuthBackend'
     # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+REST_USE_JWT = True
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_AUTH_COOKIE': 'token',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=30)
+}
 
 REST_AUTH_SERIALIZERS = {
     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.FcPasswordResetSerializer',
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.FcUserDetailsSerializer',
     # 'JWT_SERIALIZER': 'authentication.serializers.JWTSerializer',
 }
-REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
-
+# REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
 
 # All auth configuration
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")
+# EMAIL_USE_SSL = config("EMAIL_USE_SSL")
+# DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/accounts/confirmed"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/accounts/confirmed"
+ACCOUNT_ADAPTER = "accounts.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_UNIQUE_EMAIL = True
