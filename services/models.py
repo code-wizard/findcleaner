@@ -31,6 +31,12 @@ class FcService(models.Model):
         db_table = "fc_service"
         verbose_name = _("Service")
 
+    def get_category_name(self):
+        try:
+            return self.category.category
+        except:
+            return 'No category'
+
     def __str__(self):
         try:
             return f"{self.category}"
