@@ -12,3 +12,8 @@ class FcSystemSettings(models.Model):
     class Meta:
         db_table = "fc_settings"
         verbose_name = _("Settings")
+
+
+
+
+
