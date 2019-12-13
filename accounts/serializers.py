@@ -44,9 +44,10 @@ class FcPasswordResetSerializer(PasswordResetSerializer):
 class FcRegisterSerializer(serializers.ModelSerializer):
     # with transaction.atomic():
     email = serializers.EmailField(max_length=255, write_only=False)
+    password = serializers.CharField(max_length=1000, write_only=True)
     first_name = serializers.CharField(max_length=255, write_only=False)
     last_name = serializers.CharField(max_length=255, write_only=False)
-    password = serializers.CharField(max_length=1000, write_only=True)
+    phone_number = serializers.CharField(max_length=255, write_only=False)
 
     def validate_email(self, email):
         if FcUser.objects.filter(email=email).exists():
@@ -61,6 +62,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             user = FcUser.objects.create(
                 username=validated_data.get("email"),
                 email=validated_data.get("email"),
+                phone_number=validated_data.get("phone_number",""),
                 first_name = first_name,
                 last_name = last_name,
                 account_type = account_type
@@ -85,7 +87,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcUser
-        fields = ("email","first_name","last_name","account_type","password")
+        fields = ("email","first_name","last_name","phone_number","account_type","password")
 
 
 class FcUserDetailsSerializer(serializers.ModelSerializer):
