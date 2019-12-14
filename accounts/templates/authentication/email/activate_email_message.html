@@ -9,7 +9,7 @@ email: {{ user.email }}<br>
 {% endif %}
 
 Click the activation link below or copy and paste it in your browser to activate your account:<br>
-activation link: {{ activate_url }}<br><br>
+activation link: <a href="{{ activate_url }}">{{ activate_url }}</a><br><br>
 
 {% if user_password %}
     You are advice to change your password once you login<br><br>

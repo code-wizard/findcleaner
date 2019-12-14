@@ -50,4 +50,14 @@ class ConfirmEmailView(APIView):
 
         return Response({"status": status})
 
+    def get(self, *args, **kwargs):
+        self.object = confirmation = self.get_object()
+        if confirmation:
+            confirmation.confirm(self.request)
+            status = "Activated"
+        else:
+            status = 'Error'
+
+        return Response({"status": status})
+
 confirm_email = ConfirmEmailView.as_view()
