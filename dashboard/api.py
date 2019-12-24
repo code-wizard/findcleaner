@@ -22,6 +22,7 @@ class AllUsers(generics.ListAPIView):
 
     def get_queryset(self):
         qs = FcUser.objects.all()
+        # print(qs.first().__class__)
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(first_name=query)|

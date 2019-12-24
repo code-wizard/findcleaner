@@ -28,6 +28,11 @@ class FcServiceProvider(models.Model):
     def get_service_name(self):
         return self.service.service
 
+    def get_name(self):
+        firsname = self.provider.user.first_name
+        lastname = self.provider.user.last_name
+        return f"{firsname} {lastname}"
+
 
     class Meta:
         db_table = "fc_service_provider"

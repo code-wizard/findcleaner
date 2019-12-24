@@ -1,18 +1,30 @@
 from .models import FcServiceProvider
 from rest_framework import serializers
 from customers.models import FcServiceRequest
+from .models import FcProvider
+
+
+# class FcServiceProviderSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FcProvider
+#         fields = '__all__'
 
 
 class FcServiceProviderSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+
+    def get_name(self,obj):
+        return obj.get_name()
 
     def get_service_name(self,obj):
         return obj.get_service_name()
 
     class Meta:
         model = FcServiceProvider
-        fields = '__all__'
-        read_only_fields = ('provider',)
+        # fields = '__all__'
+        exclude = ('provider',)
+        # read_only_fields = ('provider',)
 
 
 class FcProviderDashboard(serializers.Serializer):

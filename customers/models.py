@@ -18,6 +18,11 @@ class FcCustomer(models.Model):
         db_table = "fc_customer"
         verbose_name = _("Customer")
 
+    def get_name(self):
+        firsname = self.user.first_name
+        lastname = self.user.last_name
+        return f"{firsname} {lastname}"
+
 
 class FcServiceRequest(models.Model):
     service = models.ForeignKey(FcService, on_delete=models.CASCADE, related_name='service_requests', null=True)
