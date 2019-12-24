@@ -6,7 +6,7 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcServiceRequest
         fields = '__all__'
-        read_only_fields = ['service_provider','customer','status']
+        read_only_fields = ['customer','status']
 
 
 

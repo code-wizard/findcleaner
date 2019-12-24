@@ -3,6 +3,7 @@ from accounts.models import FcUser
 from customers.models import FcServiceRequest
 from .models import FcSystemSettings
 
+
 class DashBoardUsersViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcUser

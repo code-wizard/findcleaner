@@ -8,11 +8,17 @@ from rest_framework.response import Response
 
 
 class NewProviderService(CreateAPIView):
+    """
+    Use this end point to add service to provider by passing service ID
+    """
     serializer_class = FcServiceProviderSerializer
 
 
-
 class ProviderServiceList(ListAPIView):
+    """
+    Get a list of providers who have signed up for the specified service,
+    by passing the service id.
+    """
     serializer_class = FcServiceProviderSerializer
 
     def get_queryset(self):
@@ -22,6 +28,9 @@ class ProviderServiceList(ListAPIView):
 
 
 class ProviderSummaryDashboard(APIView):
+    """
+        Logged in provider can use this endpoint to show summary of all his transaction
+    """
     def get(self,request):
         user = self.request.user
         provider = user.provider_info.all().first()
@@ -55,6 +64,9 @@ class ProviderSummaryDashboard(APIView):
 
 
 class MyServiceRequest(ListAPIView):
+    """
+    View all logged in provider request.
+    """
     serializer_class = FcServiceRequestSerializer
 
     def get_queryset(self):
@@ -71,6 +83,11 @@ class MyServiceRequest(ListAPIView):
 
 
 class RequestByStatus(ListAPIView):
+    """
+        View List of request based and filter by request status. which can be
+        new, accepted, ongoing, cancel and completed
+
+    """
     serializer_class = FcServiceRequestSerializer
 
     def get_queryset(self):

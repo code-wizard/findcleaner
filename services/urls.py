@@ -8,3 +8,4 @@ urlpatterns = [
     path('new-service/', NewService.as_view()),
     path('all-services',AllServices.as_view())
 ]
+
