@@ -21,7 +21,7 @@ class AllUsers(generics.ListAPIView):
     ordering = ('first_name',)  # Default ordering
 
     def get_queryset(self):
-        qs = FcUser.objects.all().order_by('-created_at')
+        qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
         # print(qs.first().__class__)
         query = self.kwargs.get('query')
         if query:
@@ -35,7 +35,7 @@ class AllUsers_NoPgaination(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        qs = FcUser.objects.all().order_by('-created_at')
+        qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(first_name=query)|
@@ -54,7 +54,7 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         query = self.kwargs.get("username")
-        user = get_object_or_404(FcUser,username=query)
+        user = get_object_or_404(FcUser,username=query,is_superuser=False)
         return user
 
 
