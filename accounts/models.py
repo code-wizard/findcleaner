@@ -66,7 +66,10 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
 
     def get_platform_id(self): # platform id means provider id or customer id
         if self.account_type == 'customer':
-            return self.customer_info.first().id
+            try:
+                return self.customer_info.first().id
+            except:
+                return 'admin'
         else: return self.provider_info.first().id
 
     class Meta:
