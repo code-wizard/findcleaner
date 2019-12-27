@@ -7,13 +7,13 @@ from django.utils import timezone
 account_types = (("customer", "Customer"), ("provider", "Service Provider"))
 
 
-class MyUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+class FcUserManager(BaseUserManager):
+    def create_user(self, username, email, password=None):
         if not email:
             raise ValueError('Users must have an email address')
 
         user = self.model(
-            email=self.normalize_email(email), username=self.normalize_email(email)
+            email=self.normalize_email(email), username=username
         )
 
         user.set_password(password)
@@ -21,20 +21,22 @@ class MyUserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self,username, email, password):
         super_user = self.create_user(
-            email,
+            username=username,
+            email=email,
             password=password,
         )
         super_user.is_staff = True
         super_user.is_superuser = True
+        super_user.is_active = True
         super_user.save(using=self._db)
         return super_user
 
 
 class FcUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
     email = models.EmailField(_('email address'), max_length=254, unique=True, db_index=True)
     username = models.CharField(_('username'), max_length=500, blank=True, unique=True)
     first_name = models.CharField(max_length=40)
@@ -57,7 +59,7 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
                                                 'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    objects = MyUserManager()
+    objects = FcUserManager()
 
     def get_user_type(self):
         return self.account_type
