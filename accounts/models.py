@@ -33,7 +33,7 @@ class MyUserManager(BaseUserManager):
 
 
 class FcUser(AbstractBaseUser, PermissionsMixin):
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
     email = models.EmailField(_('email address'), max_length=254, unique=True, db_index=True)
     username = models.CharField(_('username'), max_length=500, blank=True, unique=True)

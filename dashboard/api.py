@@ -14,15 +14,28 @@ class AllUsers(generics.ListAPIView):
     by passing the keyword "query={search parameter}"
     """
     serializer_class = DashBoardUsersViewSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('account_type','username', 'first_name','last_name','email')
     ordering = ('first_name',)  # Default ordering
 
     def get_queryset(self):
-        qs = FcUser.objects.all()
+        qs = FcUser.objects.all().order_by('-created_at')
         # print(qs.first().__class__)
+        query = self.kwargs.get('query')
+        if query:
+            qs = qs.filter(Q(first_name=query)|
+                                                  Q(last_name=query))
+        return qs
+
+
+class AllUsers_NoPgaination(generics.ListAPIView):
+    serializer_class = DashBoardUsersViewSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        qs = FcUser.objects.all().order_by('-created_at')
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(first_name=query)|
@@ -36,6 +49,8 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         of the desired user to perform the operation on
         """
     serializer_class = DashBoardUsersViewSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
 
     def get_object(self):
         query = self.kwargs.get("username")
@@ -49,6 +64,8 @@ class TransactionView(generics.RetrieveUpdateDestroyAPIView):
         of the trasaction as a keyword "service_id={}"
         """
     serializer_class = DashBoardActiveSessionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
 
     def get_object(self):
         query = self.kwargs.get("service_id")
@@ -62,10 +79,12 @@ class AllTransactionView(generics.ListAPIView):
     the keyword "status={completed,ongoing...}"
      """
     serializer_class = DashBoardActiveSessionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
     # queryset = FcServiceRequest.objects.all()
 
     def get_queryset(self):
-        qs = FcServiceRequest.objects.all()
+        qs = FcServiceRequest.objects.all().order_by('-created_at')
         status = self.kwargs.get('status')
         if status:
             qs = qs.filter(Q(status=status))
@@ -80,14 +99,31 @@ class ActiveSession(generics.ListAPIView):
     on customer name or description of the service
     """
     serializer_class = DashBoardActiveSessionSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     # search_fields = ('account_type','username', 'first_name','last_name','email')
     # ordering = ('first_name',)  # Default ordering
 
     def get_queryset(self):
-        qs = FcServiceRequest.objects.filter(status='ongoing')
+        qs = FcServiceRequest.objects.filter(status='ongoing').order_by('-created_at')
+        query = self.kwargs.get('query')
+        if query:
+            qs = qs.filter(Q(requirement_description=query)|
+                                                  Q(customer__user__first_name=query))
+        return qs
+
+
+class ActiveSessionNoPagination(generics.ListAPIView):
+    """
+    Use this endpoint to search or list some transaction based
+    on customer name or description of the service
+    """
+    serializer_class = DashBoardActiveSessionSerializer
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        qs = FcServiceRequest.objects.filter(status='ongoing').order_by('-created_at')
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(requirement_description=query)|
@@ -101,6 +137,8 @@ class FcSettingView(generics.RetrieveUpdateAPIView):
     support only GET,PATCH request.
     """
     serializer_class = FcSettingsSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
 
     def get_object(self):
         obj_settings = FcSystemSettings.objects.first()

@@ -45,6 +45,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
     # with transaction.atomic():
     email = serializers.EmailField(max_length=255, write_only=False)
     password = serializers.CharField(max_length=1000, write_only=True)
+    username = serializers.CharField(max_length=255, write_only=False)
     first_name = serializers.CharField(max_length=255, write_only=False)
     last_name = serializers.CharField(max_length=255, write_only=False)
     phone_number = serializers.CharField(max_length=255, write_only=False)
@@ -54,13 +55,18 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already exists")
         return email
 
+    def validate_username(self,username):
+        if FcUser.objects.filter(username=username).exists():
+            raise serializers.ValidationError("This username has already been taken")
+        return username
+
     def create(self, validated_data):
         with transaction.atomic():
             first_name = validated_data.get("first_name","")
             last_name = validated_data.get("last_name","")
             account_type = validated_data.get("account_type","")
             user = FcUser.objects.create(
-                username=validated_data.get("email"),
+                username=validated_data.get("username"),
                 email=validated_data.get("email"),
                 phone_number=validated_data.get("phone_number",""),
                 first_name = first_name,
@@ -87,7 +93,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcUser
-        fields = ("email","first_name","last_name","phone_number","account_type","password")
+        fields = ("email","username","first_name","last_name","phone_number","account_type","password")
 
 
 class FcUserDetailsSerializer(serializers.ModelSerializer):

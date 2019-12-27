@@ -5,6 +5,9 @@ from rest_framework.views import  APIView
 from customers.models import FcServiceRequest
 from django.db.models import Sum
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import FcProvider
+from rest_framework import permissions
 
 
 class NewProviderService(CreateAPIView):
@@ -12,6 +15,12 @@ class NewProviderService(CreateAPIView):
     Use this end point to add service to provider by passing service ID
     """
     serializer_class = FcServiceProviderSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        provider = get_object_or_404(FcProvider, user=user)
+        return serializer.save(provider=provider)
 
 
 class ProviderServiceList(ListAPIView):
@@ -20,6 +29,7 @@ class ProviderServiceList(ListAPIView):
     by passing the service id.
     """
     serializer_class = FcServiceProviderSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         service_id = self.kwargs.get('service_id')

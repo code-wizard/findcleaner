@@ -6,7 +6,9 @@ app_name = "dashboard"
 
 urlpatterns = [
     path('users/', api.AllUsers.as_view()),
+    path('users/all', api.AllUsers_NoPgaination.as_view()),
     path('active-session/', api.ActiveSession.as_view()),
+    path('active-session/all', api.ActiveSessionNoPagination.as_view()),
     path('user/<username>', api.UserUpdateDeleteView.as_view()),
     path('all-transaction/', api.AllTransactionView.as_view()),
     path('transaction/<service_id>', api.TransactionView.as_view()),
