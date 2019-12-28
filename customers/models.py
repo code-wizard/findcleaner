@@ -43,6 +43,6 @@ class FcServiceRequest(models.Model):
         db_table = "fc_service_request"
         verbose_name = _("Service Request")
 
-    def get_service_name(self):
-        return self.service.service
+    def get_customer_name(self):
+        return self.customer.user.get_full_name()
 

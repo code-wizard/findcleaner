@@ -81,7 +81,7 @@ class AllTransactionView(generics.ListAPIView):
     the keyword "status={completed,ongoing...}"
      """
     serializer_class = DashBoardActiveSessionSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     # queryset = FcServiceRequest.objects.all()
 
