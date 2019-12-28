@@ -1,11 +1,12 @@
 from rest_framework import permissions, viewsets,generics,filters,status,views
-from .serializers import DashBoardUsersViewSerializer,DashBoardActiveSessionSerializer,FcSettingsSerializer
+from .serializers import DashBoardUsersViewSerializer,UsersViewSerializer,DashBoardActiveSessionSerializer,FcSettingsSerializer
 from accounts.models import FcUser
 from customers.models import FcServiceRequest
 from core import pagination
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .models import FcSystemSettings
+from rest_framework.response import Response
 
 
 class AllUsers(generics.ListAPIView):
@@ -48,7 +49,7 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         This endpoint allow both POST,GET and DELETE request by passing the username
         of the desired user to perform the operation on
         """
-    serializer_class = DashBoardUsersViewSerializer
+    serializer_class = UsersViewSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
 

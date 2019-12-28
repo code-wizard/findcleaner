@@ -6,6 +6,7 @@ from providers.serializers import FcServiceProviderSerializer
 from customers.serializers import FcServiceRequestSerializer
 from services.serializers import ServiceSerializer
 
+
 class DashBoardUsersViewSerializer(serializers.Serializer):
     def to_representation(self, obj):
         id = obj.get_platform_id()
@@ -20,15 +21,12 @@ class DashBoardUsersViewSerializer(serializers.Serializer):
             'phone_number': obj.phone_number
         }
 
-# class DashBoardUsersViewSerializer(serializers.ModelSerializer):
-#     platform_id = serializers.SerializerMethodField(read_only=True)
-#
-#     def get_platform_id(self,obj):
-#         return "sample"
-#
-#     class Meta:
-#         model = FcUser
-#         fields = ('username','first_name','last_name','account_type','platform_id','email','phone_number',)
+
+class UsersViewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FcUser
+        fields = ('username','first_name','last_name','account_type','email','phone_number',)
 
 
 class DashBoardActiveSessionSerializer(serializers.ModelSerializer):
