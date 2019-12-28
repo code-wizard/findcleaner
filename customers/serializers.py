@@ -14,12 +14,12 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
 
     def get_name(self, obj):
-        return obj.get_name()
+        return obj.get_service_name()
 
     class Meta:
-        model = FcCustomer
-        # fields = '__all__'
-        exclude = ('user','address')
+        model = FcServiceRequest
+        fields = '__all__'
+        # exclude = ('user','address')
         read_only_fields = ['customer','status']
 
 

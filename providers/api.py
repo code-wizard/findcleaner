@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import FcProvider
 from rest_framework import permissions
+from core.permissions import IsCustomer,IsProvider,IsStaff
 
 
 class NewProviderService(CreateAPIView):
@@ -15,7 +16,7 @@ class NewProviderService(CreateAPIView):
     Use this end point to add service to provider by passing service ID
     """
     serializer_class = FcServiceProviderSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsProvider,)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -78,6 +79,7 @@ class MyServiceRequest(ListAPIView):
     View all logged in provider request.
     """
     serializer_class = FcServiceRequestSerializer
+    permission_classes = (IsProvider,)
 
     def get_queryset(self):
         # print('get here')

@@ -6,7 +6,8 @@ from core import pagination
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .models import FcSystemSettings
-from rest_framework.response import Response
+from core.permissions import IsCustomer,IsProvider,IsStaff
+
 
 
 class AllUsers(generics.ListAPIView):
@@ -15,11 +16,11 @@ class AllUsers(generics.ListAPIView):
     by passing the keyword "query={search parameter}"
     """
     serializer_class = DashBoardUsersViewSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsStaff,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('account_type','username', 'first_name','last_name','email')
-    ordering = ('first_name',)  # Default ordering
+    search_fields = ('account_type','username','phone_number', 'first_name','last_name','email')
+    ordering = ('account_type',)  # Default ordering
 
     def get_queryset(self):
         qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
@@ -33,7 +34,7 @@ class AllUsers(generics.ListAPIView):
 
 class AllUsers_NoPgaination(generics.ListAPIView):
     serializer_class = DashBoardUsersViewSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsStaff,)
 
     def get_queryset(self):
         qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
