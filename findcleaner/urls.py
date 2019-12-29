@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
 from rest_framework_swagger.views import get_swagger_view
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
@@ -29,5 +32,7 @@ urlpatterns = [
     path('services/', include("services.urls")),
     path('dashboard/', include("dashboard.urls")),
 ]
+if settings.DEBUG:
+    urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()
 

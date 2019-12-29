@@ -16,7 +16,7 @@ class NewProviderService(CreateAPIView):
     Use this end point to add service to provider by passing service ID
     """
     serializer_class = FcServiceProviderSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -30,7 +30,7 @@ class ProviderServiceList(ListAPIView):
     by passing the service id.
     """
     serializer_class = FcServiceProviderSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         service_id = self.kwargs.get('service_id')
@@ -79,7 +79,7 @@ class MyServiceRequest(ListAPIView):
     View all logged in provider request.
     """
     serializer_class = FcServiceRequestSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def get_queryset(self):
         # print('get here')

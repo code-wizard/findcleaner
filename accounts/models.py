@@ -77,6 +77,9 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = _("User")
         verbose_name_plural = _('Users')
 
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 class FcAddress(models.Model):
     # user_id = models.ForeignKey(FcUser, on_delete=models.SET_NULL, related_name="customer_info", null=True)
