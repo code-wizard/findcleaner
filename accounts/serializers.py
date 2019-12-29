@@ -116,5 +116,5 @@ class FcUserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = auth_models.FcUser
-        fields = ('id', 'username',
+        fields = ('id', 'username',"first_name","last_name",
                   'email', 'is_active','user_type', "date_joined", "is_superuser","is_staff")
