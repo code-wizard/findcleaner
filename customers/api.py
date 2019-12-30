@@ -16,7 +16,7 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
     new-request/ endpoint
     """
     serializer_class = FcServiceRequestSerializer
-    permission_classes = (IsCustomer,)
+    # permission_classes = (IsCustomer,)
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -37,7 +37,7 @@ class NewRequestView(generics.ListAPIView):
          a service or description of a service. pass query = "specified keyword"
     """
     serializer_class = FcServiceProviderSerializer
-    permission_classes = (IsCustomer,)
+    # permission_classes = (IsCustomer,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('service__service', 'service_description')
@@ -54,7 +54,7 @@ class NewRequestView(generics.ListAPIView):
 
 class UpdateRequestView(generics.RetrieveUpdateAPIView):
     serializer_class = FcServiceRequestSerializer
-    permission_classes = (IsCustomer,)
+    # permission_classes = (IsCustomer,)
     # queryset = FcServiceRequest.objects.all()
 
     def get_object(self):

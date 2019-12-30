@@ -81,6 +81,10 @@ class AllTransactionView(generics.ListAPIView):
     the keyword "status={completed,ongoing...}"
      """
     serializer_class = DashBoardActiveSessionSerializer
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('service_required_on','expected_start_time','service_deliver_on')
+    ordering = ('service_required_on','service_deliver_on',)  # Default ordering
     # permission_classes = (permissions.IsAuthenticated,)
 
     # queryset = FcServiceRequest.objects.all()
