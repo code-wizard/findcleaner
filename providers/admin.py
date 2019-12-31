@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FcProvider,FcServiceProvider
+from .models import FcProvider,FcProviderServices
 
 admin.site.register(FcProvider)
-admin.site.register(FcServiceProvider)
+admin.site.register(FcProviderServices)

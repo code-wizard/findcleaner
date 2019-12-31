@@ -1,5 +1,10 @@
-from .serializers import FcServiceProviderSerializer,FcProviderDashboard,FcServiceRequestSerializer
-from .models import FcServiceProvider
+from django.contrib.auth import get_user_model
+from rest_auth.views import LoginView
+
+from .serializers import FcProviderServicesSerializer,FcProviderDashboard,\
+    FcServiceRequestSerializer,FcProviderSignUpSerializer, FcProviderSerializer
+from .models import FcProviderServices
+from accounts.serializers import FcUserDetailsSerializer
 from rest_framework.generics import CreateAPIView,ListAPIView
 from rest_framework.views import  APIView
 from customers.models import FcServiceRequest
@@ -7,15 +12,54 @@ from django.db.models import Sum
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import FcProvider
-from rest_framework import permissions
+from accounts.serializers import FcLoginSerializer
+User = get_user_model()
+from rest_framework import permissions, status
 from core.permissions import IsCustomer,IsProvider,IsStaff
 
+
+class FcProviderLoginView(LoginView):
+    serializer_class = FcLoginSerializer
+
+    def get_response(self):
+        serializer_class = self.get_response_serializer()
+        data = {
+            'user': self.user,
+            'token': self.token
+        }
+        serializer = serializer_class(instance=data, context={'request': self.request})
+
+        provider = FcProviderSerializer(self.user.provider_info).data
+        return Response({"user": serializer.data, 'provider': provider}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        self.request = request
+        self.serializer = self.get_serializer(data=self.request.data,
+                                              context={'request': request, 'account_type': User.FcAccountType.PROVIDER})
+        self.serializer.is_valid(raise_exception=True)
+
+        # update_last_login(None, request.user)
+        self.login()
+        if self.user.provider_info.status == FcProvider.FcProviderStatus.DISABLED:
+            return Response('Your account is under review. Please contact admin', status=401)
+        return self.get_response()
+
+class FcProviderRegisterView(APIView):
+    serializer_class = FcProviderSignUpSerializer
+
+    def post(self, request):
+        data = request.data.dict()
+        data["coords"] = [9434034,-4343]
+        serializer = self.serializer_class(data=data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'message': 'success'})
 
 class NewProviderService(CreateAPIView):
     """
     Use this end point to add service to provider by passing service ID
     """
-    serializer_class = FcServiceProviderSerializer
+    serializer_class = FcProviderServicesSerializer
     # permission_classes = (IsProvider,)
 
     def perform_create(self, serializer):
@@ -29,12 +73,12 @@ class ProviderServiceList(ListAPIView):
     Get a list of providers who have signed up for the specified service,
     by passing the service id.
     """
-    serializer_class = FcServiceProviderSerializer
+    serializer_class = FcProviderServicesSerializer
     # permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         service_id = self.kwargs.get('service_id')
-        return FcServiceProvider.objects.filter(service__id=service_id)
+        return FcProviderServices.objects.filter(service__id=service_id)
 
 
 

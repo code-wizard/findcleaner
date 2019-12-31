@@ -1,8 +1,9 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from accounts.models import FcUser,FcAddress
 from django.utils.translation import ugettext_lazy as _
 from services.models import FcService
-from providers.models import FcServiceProvider
+from providers.models import FcProviderServices
 
 status = (("new", "New"),("accepted", "Accepted"), ("ongoing", "Ongoing"),("cancel", "Cancelled"), ("completed", "Completed"))
 payment_mode = (("cash", "Cash"), ("card", "Card"), ("bank_transfer", "Bank Transfer"))
@@ -21,16 +22,19 @@ class FcCustomer(models.Model):
     def get_name(self):
         firsname = self.user.first_name
         lastname = self.user.last_name
-        return f"{firsname} {lastname}"
+        return "{} {}".format(firsname, lastname)
 
 
 class FcServiceRequest(models.Model):
     service = models.ForeignKey(FcService, on_delete=models.CASCADE, related_name='service_requests', null=True)
-    service_provider = models.ForeignKey(FcServiceProvider, on_delete=models.SET_NULL, related_name="provider_service_request", null=True)
+    service_provider = models.ForeignKey(FcProviderServices, on_delete=models.SET_NULL,
+                                         related_name="provider_service_request", null=True)
     customer = models.ForeignKey(FcCustomer, on_delete=models.SET_NULL, related_name="customer", null=True)
-    requirement_description = models.TextField(_('Service Requirement'),max_length=500, null=True, blank=True)
-    service_required_on = models.CharField(_('Service requested On'),max_length=500, null=True, blank=True)
-    expected_start_time = models.CharField(_('Expected Start Time'),max_length=500, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True)
+    coords = ArrayField(models.IntegerField(null=True), size=2, null=True)
+    requirement_description = models.TextField(_('Service Requirement'), max_length=500, null=True, blank=True)
+    service_required_on = models.DateTimeField(_('Service requested On'), null=True, blank=True)
+    # expected_start_time = models.TimeField(_('Expected Start Time'), null=True, blank=True)
     expected_hours_to_complete = models.CharField(_('Expected Complete hours'),max_length=500, null=True, blank=True)
     total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)

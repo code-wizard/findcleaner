@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 
-account_types = (("customer", "Customer"), ("provider", "Service Provider"))
+account_types = (("customer", "Customer"), ("provider", "Service Provider"), ('admin', 'Admin'))
 
 
 class FcUserManager(BaseUserManager):
@@ -35,6 +35,11 @@ class FcUserManager(BaseUserManager):
 
 
 class FcUser(AbstractBaseUser, PermissionsMixin):
+    class FcAccountType:
+        CUSTOMER = account_types[0][0]
+        PROVIDER = account_types[1][0]
+        ADMIN = account_types[2][0]
+
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ['email']
     email = models.EmailField(_('email address'), max_length=254, unique=True, db_index=True)
@@ -78,7 +83,7 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('Users')
 
     def get_full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return "{} {}".format(self.first_name, self.last_name)
 
 
 class FcAddress(models.Model):

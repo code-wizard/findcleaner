@@ -1,7 +1,12 @@
-from .models import FcServiceProvider
+from django.db import transaction
+
+from accounts.serializers import FcRegisterSerializer, FcUserDetailsSerializer
+from .models import FcProviderServices, FcProvider
 from rest_framework import serializers
 from customers.models import FcServiceRequest
+from accounts.models import FcUser
 from .models import FcProvider
+from accounts.signals import send_confirmation_email
 
 
 # class FcServiceProviderSerializer(serializers.ModelSerializer):
@@ -9,8 +14,42 @@ from .models import FcProvider
 #         model = FcProvider
 #         fields = '__all__'
 
+class FcProviderSerializer(serializers.ModelSerializer):
 
-class FcServiceProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FcProvider
+        fields = '__all__'
+
+
+class FcProviderSignUpSerializer(FcRegisterSerializer):
+    # user = FcUserDetailsSerializer(read_only=True)
+
+
+    def create(self, validated_data):
+        with transaction.atomic():
+            validated_data["is_active"] = False
+            validated_data["account_type"] = FcUser.FcAccountType.PROVIDER
+            user = super(FcProviderSignUpSerializer, self).create(validated_data)
+            coords = validated_data.get("coords")
+            provider_info = FcProvider.objects.create(user=user,
+                                                      state=validated_data.get('state'),
+                                                      city=validated_data.get('city'),
+                                                      address=validated_data.get('address'),
+                                                      name=validated_data.get('name'),
+                                                      coords=coords)
+            provider_info.save()
+            request = self.context.get("request")
+            send_confirmation_email.send(sender=FcProvider, request=request, user=user, signup=True)
+            return user
+
+    class Meta:
+        model = FcProvider
+        fields = ('email', 'first_name', 'last_name', 'phone_number','password',
+                  'coords', 'name', 'address', 'city', 'state')
+
+
+
+class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
 
@@ -21,7 +60,7 @@ class FcServiceProviderSerializer(serializers.ModelSerializer):
         return obj.get_service_name()
 
     class Meta:
-        model = FcServiceProvider
+        model = FcProviderServices
         # fields = '__all__'
         exclude = ('provider',)
         # read_only_fields = ('provider',)

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from accounts.models import FcUser
 from rest_auth.serializers import PasswordResetSerializer
@@ -7,8 +8,63 @@ from django.conf import settings
 from django.db import transaction
 from customers.models import FcCustomer
 from providers.models import FcProvider
+from django.utils.translation import ugettext_lazy as _
 from allauth.account.utils import send_email_confirmation
 
+UserModel = get_user_model()
+
+
+class FcLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True, allow_blank=True)
+    password = serializers.CharField(style={'input_type': 'password'})
+
+    def authenticate(self, **kwargs):
+        return authenticate(self.context['request'], **kwargs)
+
+    def _validate_email(self, email, password):
+        user = None
+
+        if email and password:
+            user = self.authenticate(email=email, password=password)
+        else:
+            msg = _('Must include "email" and "password".')
+            raise serializers.ValidationError(msg)
+
+        return user
+
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        user = self._validate_email(email, password)
+
+        # Did we get back an active user?
+        if user:
+
+            if not user.is_active:
+                msg = _('User account is disabled.')
+                raise serializers.ValidationError(msg)
+        else:
+            msg = _('Unable to log in with provided credentials.')
+            raise serializers.ValidationError(msg)
+
+        # check if a customer is trying to login into the provider app
+
+        if self.context.get('account_type') == 'provider' and user.account_type == 'customer':
+            raise serializers.ValidationError(_('You are not allowed to access this section of FindCleaner'))
+
+        # If required, is the email verified?
+        if 'rest_auth.registration' in settings.INSTALLED_APPS:
+            from allauth.account import app_settings
+            if app_settings.EMAIL_VERIFICATION == app_settings.EmailVerificationMethod.MANDATORY:
+                email_address = user.emailaddress_set.get(email=user.email)
+                if not email_address.verified:
+                    raise serializers.ValidationError(_('E-mail is not verified.'))
+
+
+        attrs['user'] = user
+        return attrs
 
 
 class FcPasswordResetSerializer(PasswordResetSerializer):
@@ -45,7 +101,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
     # with transaction.atomic():
     email = serializers.EmailField(max_length=255, write_only=False)
     password = serializers.CharField(max_length=1000, write_only=True)
-    username = serializers.CharField(max_length=255, write_only=False)
+    # username = serializers.CharField(max_length=255, write_only=False)
     first_name = serializers.CharField(max_length=255, write_only=False)
     last_name = serializers.CharField(max_length=255, write_only=False)
     phone_number = serializers.CharField(max_length=255, write_only=False)
@@ -66,10 +122,11 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             last_name = validated_data.get("last_name","")
             account_type = validated_data.get("account_type","")
             user = FcUser.objects.create(
-                username=validated_data.get("username"),
+                username=validated_data.get("email"),
                 email=validated_data.get("email"),
                 phone_number=validated_data.get("phone_number",""),
                 first_name = first_name,
+                is_active = validated_data.get("is_active", True),
                 last_name = last_name,
                 account_type = account_type
             )
@@ -77,23 +134,24 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             user.raw_password = validated_data.get("password")
             user.save()
 
-            if account_type == 'customer':
-                customer_info = FcCustomer.objects.create(user=user)
-                customer_info.save()
-            else:
-                provider_info = FcProvider.objects.create(user=user)
-                provider_info.save()
+            # if account_type == 'customer':
+            #     customer_info = FcCustomer.objects.create(user=user)
+            #     customer_info.save()
+            # else:
+            #     provider_info = FcProvider.objects.create(user=user)
+            #     provider_info.save()
 
-            request = self.context.get("request")
+            # request = self.context.get("request")
             print('before sending mail')
-            send_email_confirmation(request, user, True)
+            # send_email_confirmation(request, user, True)
             print('after sending mail')
 
             return user
 
     class Meta:
         model = FcUser
-        fields = ("email","username","first_name","last_name","phone_number","account_type","password")
+        fields = ("email","first_name","last_name","phone_number","account_type","password")
+
 
 
 class FcUserDetailsSerializer(serializers.ModelSerializer):

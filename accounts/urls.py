@@ -6,6 +6,7 @@ from accounts import views
 app_name = "accounts"
 
 urlpatterns = [
+    # path('customer-login/', api.FcCustomerLoginView.as_view(), name="customer-login"),
     path('rest-auth/', include('rest_auth.urls')),
     path("confirm-email/<key>/", views.confirm_email, name="confirm_email"),
     path("accounts/confirmed/", views.account_confirm, name="account_confirm"),

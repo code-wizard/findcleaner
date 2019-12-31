@@ -1,14 +1,30 @@
 from rest_framework import serializers
 from .models import FcServiceRequest
 from .models import FcCustomer
-
-class FcServiceRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FcServiceRequest
-        fields = '__all__'
-        read_only_fields = ['customer','status']
+from accounts.serializers import FcRegisterSerializer
+from accounts.signals import send_confirmation_email
+from accounts.models import FcUser
 
 
+class FcCustomerSignUpSerializer(FcRegisterSerializer):
+
+    def create(self, validated_data):
+        validated_data["account_type"] = FcUser.FcAccountType.CUSTOMER
+        user = super(FcCustomerSignUpSerializer, self).create(validated_data)
+        customer_info = FcCustomer.objects.create(user=user)
+        customer_info.save()
+        request = self.context.get("request")
+        send_confirmation_email.send(sender=FcCustomer, request=request, user=user, signup=True)
+        return user
+
+#
+# class FcServiceRequestSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FcServiceRequest
+#         fields = '__all__'
+#         read_only_fields = ['customer','status']
+#
+#
 
 class FcServiceRequestSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)

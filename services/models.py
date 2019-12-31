@@ -17,7 +17,7 @@ class FcServiceCategory(models.Model):
 
     def __str__(self):
         try:
-            return f"{self.category}"
+            return "{}".format(self.category)
         except:
             return str(self.id)
 
@@ -47,7 +47,7 @@ class FcService(models.Model):
 
     def __str__(self):
         try:
-            return f"{self.category}"
+            return "{}".format(self.category)
         except:
             return str(self.id)
 

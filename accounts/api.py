@@ -1,3 +1,4 @@
+from rest_auth.views import LoginView
 from rest_framework.views import APIView
 from accounts import serializers
 from rest_framework.response import Response
@@ -28,7 +29,10 @@ class FcResendActivationEmailAPIView(APIView):
 
             send_email_confirmation(request, user, True)
         except:
-            return Response("Unable to send activation email please enrsure you entered a valid email",
+            return Response("Unable to send activation email please ensure you entered a valid email",
                             status=status.HTTP_400_BAD_REQUEST)
         return Response("success")
+
+
+
 

@@ -59,10 +59,11 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'rest_framework_swagger',
 
-    'customers',
     'accounts',
+    'customers',
     'providers',
     'services',
+    'dashboard',
 ]
 SITE_ID = 1
 
@@ -184,6 +185,7 @@ JWT_AUTH = {
 REST_AUTH_SERIALIZERS = {
     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.FcPasswordResetSerializer',
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.FcUserDetailsSerializer',
+    'LOGIN_SERIALIZER': 'accounts.serializers.FcLoginSerializer',
     # 'JWT_SERIALIZER': 'authentication.serializers.JWTSerializer',
 }
 # REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
@@ -205,7 +207,7 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS")
 # DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/accounts/confirmed"
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/accounts/confirmed"
 ACCOUNT_ADAPTER = "accounts.adapter.AccountAdapter"

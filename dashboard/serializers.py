@@ -2,7 +2,7 @@ from rest_framework import serializers
 from accounts.models import FcUser
 from customers.models import FcServiceRequest
 from .models import FcSystemSettings
-from providers.serializers import FcServiceProviderSerializer
+from providers.serializers import FcProviderServicesSerializer
 from customers.serializers import FcServiceRequestSerializer,FcCustomerSerializer
 from services.serializers import ServiceSerializer
 
@@ -30,7 +30,7 @@ class UsersViewSerializer(serializers.ModelSerializer):
 
 
 class DashBoardActiveSessionSerializer(serializers.ModelSerializer):
-    service_provider = FcServiceProviderSerializer(read_only=True)
+    service_provider = FcProviderServicesSerializer(read_only=True)
     customer = FcCustomerSerializer(read_only=True)
     service = ServiceSerializer(read_only=True)
 

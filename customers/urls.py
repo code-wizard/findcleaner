@@ -1,11 +1,13 @@
 from django.urls import path, include
-from .api import NewRequestView,NewServiceRequestSchedule,UpdateRequestView
+from customers import api
 
 app_name = "customers"
 
 urlpatterns = [
-    path('new-request/', NewRequestView.as_view()),
-    path('schedule/', NewServiceRequestSchedule.as_view()),
-    path('request/<request_id>', UpdateRequestView.as_view()),
+    path('search-providers/', api.FcSearchProviders.as_view()),
+    path('login/', api.FcCustomerLoginView.as_view()),
+    path('signup/', api.FcCustomerRegisterView.as_view()),
+    path('schedule/', api.NewServiceRequestSchedule.as_view()),
+    path('request/<request_id>', api.UpdateRequestView.as_view()),
 ]
 
