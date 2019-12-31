@@ -23,7 +23,7 @@ class FcProviderSerializer(serializers.ModelSerializer):
 
 class FcProviderSignUpSerializer(FcRegisterSerializer):
     # user = FcUserDetailsSerializer(read_only=True)
-
+    services = serializers.JSONField()
 
     def create(self, validated_data):
         with transaction.atomic():

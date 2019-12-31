@@ -36,7 +36,7 @@ class FcProviderServices(models.Model):
     service = models.ForeignKey(FcService, on_delete=models.SET_NULL, related_name="service_provider", null=True)
     provider = models.ForeignKey(FcProvider, on_delete=models.SET_NULL, related_name="my_services", null=True)
     billing_rate = models.CharField(max_length=255, blank=True, null=True)
-    experience = models.CharField(max_length=255, blank=True, null=True)
+    # experience = models.CharField(max_length=255, blank=True, null=True)
     service_description = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -54,4 +54,10 @@ class FcProviderServices(models.Model):
         db_table = "fc_provider_services"
         verbose_name = _("Provider Service")
 
+
+class FcProviderRating(models.Model):
+    user
+    rating = models.IntegerField(max=5)
+    provider
+    service
 

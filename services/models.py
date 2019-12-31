@@ -34,6 +34,8 @@ class FcService(models.Model):
     avatar = models.ImageField(upload_to=service_upload_path, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    agency_base_price = models.FloatField(default=0)
+    individual_base_price = models.FloatField(default=0)
 
     class Meta:
         db_table = "fc_service"
