@@ -55,10 +55,10 @@ class FcProviderServices(models.Model):
         db_table = "fc_provider_services"
         verbose_name = _("Provider Service")
 
-
-class FcProviderRating(models.Model):
-    user
-    rating = models.IntegerField(max=5)
-    provider
-    service
-
+#
+# class FcProviderRating(models.Model):
+#     user
+#     rating = models.IntegerField(max=5)
+#     provider
+#     service
+#
