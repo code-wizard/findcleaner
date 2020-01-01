@@ -13,7 +13,7 @@ class FcAdminSignupSerializer(FcRegisterSerializer):
             validated_data['is_active'] = False
             validated_data['account_type'] = FcAdmin.FcAdminRole.ADMIN
             validated_data['is_staff'] = True
-            user = super(FcAdminSerializer, self).create(validated_data)
+            user = super(FcAdminSignupSerializer, self).create(validated_data)
             staff_info = FcAdmin.objects.create(user=user,role=validated_data.get('role'))
             staff_info.save()
             request = self.context.get('request')
