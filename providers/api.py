@@ -5,7 +5,7 @@ from .serializers import FcProviderServicesSerializer,FcProviderDashboard,\
     FcServiceRequestSerializer,FcProviderSignUpSerializer, FcProviderSerializer
 from .models import FcProviderServices
 from accounts.serializers import FcUserDetailsSerializer
-from rest_framework.generics import CreateAPIView,ListAPIView
+from rest_framework.generics import CreateAPIView,ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.views import  APIView
 from customers.models import FcServiceRequest
 from django.db.models import Sum
@@ -44,6 +44,7 @@ class FcProviderLoginView(LoginView):
             return Response('Your account is under review. Please contact admin', status=401)
         return self.get_response()
 
+
 class FcProviderRegisterView(APIView):
     serializer_class = FcProviderSignUpSerializer
 
@@ -55,7 +56,7 @@ class FcProviderRegisterView(APIView):
         serializer.save()
         return Response({'message': 'success'})
 
-class NewProviderService(CreateAPIView):
+class FcNewProviderService(CreateAPIView):
     """
     Use this end point to add service to provider by passing service ID
     """
@@ -68,7 +69,7 @@ class NewProviderService(CreateAPIView):
         return serializer.save(provider=provider)
 
 
-class ProviderServiceList(ListAPIView):
+class FcProviderServiceList(ListAPIView):
     """
     Get a list of providers who have signed up for the specified service,
     by passing the service id.
@@ -82,7 +83,7 @@ class ProviderServiceList(ListAPIView):
 
 
 
-class ProviderSummaryDashboard(APIView):
+class FcProviderSummaryDashboard(APIView):
     """
         Logged in provider can use this endpoint to show summary of all his transaction
     """
@@ -118,7 +119,7 @@ class ProviderSummaryDashboard(APIView):
         return Response(result)
 
 
-class MyServiceRequest(ListAPIView):
+class FcMyServiceRequest(ListAPIView):
     """
     View all logged in provider request.
     """
@@ -138,7 +139,7 @@ class MyServiceRequest(ListAPIView):
         return my_service_requests
 
 
-class RequestByStatus(ListAPIView):
+class FcRequestByStatus(ListAPIView):
     """
         View List of request based and filter by request status. which can be
         new, accepted, ongoing, cancel and completed
@@ -158,7 +159,25 @@ class RequestByStatus(ListAPIView):
         return my_service_requests
 
 
+class FcProviderServiceList(ListAPIView):
+    serializer_class = FcProviderServicesSerializer
+    permission_classes = (IsProvider,)
+
+    def get_queryset(self):
+        user = self.request.user
+        provider = get_object_or_404(FcProvider, user=user)
+        my_services = FcProviderServices.objects.filter(provider=provider)
+        return my_services
 
 
+class FcUpdateProviderServiceView(RetrieveUpdateDestroyAPIView):
+    serializer_class = FcProviderServicesSerializer
+    permission_classes = (IsProvider,)
 
+    def get_object(self):
+        user = self.request.user
+        provider = get_object_or_404(FcProvider, user=user)
 
+        provider_service_id = self.kwargs.get('provider_service_id')
+        p_services = get_object_or_404(FcProviderServices,provider = provider,id=provider_service_id)
+        return p_services

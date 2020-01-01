@@ -1,12 +1,12 @@
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
-from .serializers import NewCategorySerializer,ServiceSerializer
+from .serializers import ServiceSerializer
 from services.models import FcService
 
-class NewCategory(CreateAPIView):
-    """
-    Add new service category
-    """
-    serializer_class = NewCategorySerializer
+# class NewCategory(CreateAPIView):
+#     """
+#     Add new service category
+#     """
+#     serializer_class = NewCategorySerializer
 
 
 class NewService(CreateAPIView):

@@ -121,6 +121,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             first_name = validated_data.get("first_name","")
             last_name = validated_data.get("last_name","")
             account_type = validated_data.get("account_type","")
+            is_staff = validated_data.get("is_staff",False)
             user = FcUser.objects.create(
                 username=validated_data.get("email"),
                 email=validated_data.get("email"),
@@ -128,6 +129,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
                 first_name = first_name,
                 is_active = validated_data.get("is_active", True),
                 last_name = last_name,
+                is_staff = is_staff,
                 account_type = account_type
             )
             user.set_password(validated_data.get("password"))
@@ -150,7 +152,8 @@ class FcRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcUser
-        fields = ("email","first_name","last_name","phone_number","account_type","password")
+        read_only_field = ('account_type')
+        fields = ("email","first_name","last_name","is_staff","phone_number","password")
 
 
 

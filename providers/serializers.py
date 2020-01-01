@@ -22,6 +22,7 @@ class FcProviderSerializer(serializers.ModelSerializer):
 
 
 class FcProviderSignUpSerializer(FcRegisterSerializer):
+    services_info = serializers.JSONField(read_only=False, default=list)
     # user = FcUserDetailsSerializer(read_only=True)
 
 
@@ -29,6 +30,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
         with transaction.atomic():
             validated_data["is_active"] = False
             validated_data["account_type"] = FcUser.FcAccountType.PROVIDER
+            services_info = validated_data.get('services_info')
             user = super(FcProviderSignUpSerializer, self).create(validated_data)
             coords = validated_data.get("coords")
             provider_info = FcProvider.objects.create(user=user,
@@ -37,7 +39,18 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
                                                       address=validated_data.get('address'),
                                                       name=validated_data.get('name'),
                                                       coords=coords)
+
+
             provider_info.save()
+
+            # create provider services
+            FcProviderServices.objects.bulk_create(
+                [FcProviderServices(service_id=service["service_id"],
+                                   billing_rate = service["billing_rate"],
+                                   service_description=service["service_description"],
+                                   provider=provider_info)
+                 for service in eval(services_info)])
+
             request = self.context.get("request")
             send_confirmation_email.send(sender=FcProvider, request=request, user=user, signup=True)
             return user
@@ -45,7 +58,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
     class Meta:
         model = FcProvider
         fields = ('email', 'first_name', 'last_name', 'phone_number','password',
-                  'coords', 'name', 'address', 'city', 'state')
+                  'coords','services_info', 'name', 'address', 'city', 'state')
 
 
 

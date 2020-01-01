@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import FcServiceCategory, FcService
+from .models import  FcService
 
 
-class NewCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FcServiceCategory
-        fields = '__all__'
+# class NewCategorySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FcServiceCategory
+#         fields = '__all__'
 
 
 class ServiceSerializer(serializers.ModelSerializer):

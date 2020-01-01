@@ -1,12 +1,13 @@
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
-from accounts.models import FcUser,FcAddress
 from services.models import FcService
 from django.utils.translation import ugettext_lazy as _
-# from customers.models import FcCustomer
+from django.contrib.auth import get_user_model
 
 PROVIDER_TYPES = (('individual', 'Individual'), ('Agency', 'Agency'))
 PROVIDER_STATUS = (('active', 'Active'), ('disabled', 'disabled'))
+FcUser = get_user_model()
+
 
 class FcProvider(models.Model):
     class FcProviderStatus:
