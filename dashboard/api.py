@@ -83,8 +83,8 @@ class AllTransactionView(generics.ListAPIView):
     serializer_class = DashBoardActiveSessionSerializer
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('service_required_on','expected_start_time','service_deliver_on')
-    ordering = ('service_required_on','service_deliver_on',)  # Default ordering
+    search_fields = ('service_required_on','payment_mode','status','requirement_description','service_deliver_on','customer__user__first_name','service_provider__provider__user__first_name')
+    ordering = ('service_required_on','service_deliver_on','service_provider__provider__user__first_name')  # Default ordering
     # permission_classes = (permissions.IsAuthenticated,)
 
     # queryset = FcServiceRequest.objects.all()

@@ -8,6 +8,8 @@ from rest_framework import status
 from fc_admin.models import FcAdmin
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
+from rest_framework import permissions, viewsets,generics,filters,status,views
+from core import pagination
 
 FcUser = get_user_model()
 
@@ -57,6 +59,11 @@ class FcAdminRegisterView(APIView):
 
 class FcAdminListView(generics.ListAPIView):
     serializer_class = FcAdminSerializer
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('role','user__first_name','user__last_name')
+    ordering = ('role','user__first_name','user__last_name')
+    # permission_classes = (permissions.IsAuthenticated,)
     queryset = FcAdmin.objects.all()
 
 
