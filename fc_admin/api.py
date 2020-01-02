@@ -44,7 +44,11 @@ class FcAdminRegisterView(APIView):
     serializer_class = FcAdminSignupSerializer
 
     def post(self, request):
-        data = request.data.dict()
+        # print('request',request.data)
+        try:
+            data = request.data.dict()
+        except:
+            data = request.data
         serializer = self.serializer_class(data=data, context={"request":request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
