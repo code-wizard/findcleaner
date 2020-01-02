@@ -70,12 +70,14 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
         return self.account_type
 
     def get_platform_id(self): # platform id means provider id or customer id
-        if self.account_type == 'customer':
-            try:
+        try:
+            if self.account_type == 'customer':
                 return self.customer_info.first().id
-            except:
-                return 'admin'
-        else: return self.provider_info.first().id
+            else:
+                self.provider_info.first().id
+        except:
+            return 'admin'
+
 
     class Meta:
         db_table = "fc_user"

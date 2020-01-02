@@ -14,4 +14,14 @@ class FcAdmin(models.Model):
 
     user = models.ForeignKey(FcUser, on_delete=models.DO_NOTHING, related_name ='staff_info')
     role = models.CharField(max_length=60, choices=STAFF_ACCOUNT_TYPE, default='staff')
+    is_deleted = models.BooleanField(default=False)
     # created_by = models.ForeignKey("fc_admin.FcStaff", related='my_created_users')
+
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
+        return self
+
+    # class Meta:
+    #     db_table = "fc_admin"
+    #     verbose_name = _("Staff")

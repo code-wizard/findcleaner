@@ -68,3 +68,11 @@ class FcAdminUpdateView(generics.RetrieveUpdateAPIView):
         staff = get_object_or_404(FcAdmin,user__id = id)
         return staff
 
+    def patch(self, request, *args, **kwargs):
+        # self.request = request
+        staff_obj = self.get_object()
+        staff_obj.soft_delete()
+        return Response(data=staff_obj)
+
+
+

@@ -32,5 +32,5 @@ class FcAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcAdmin
-        fields = ('role','user')
+        fields = ('role','is_deleted','user')
         # read_only_fields = ['is_active',]
