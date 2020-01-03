@@ -33,4 +33,15 @@ class FcAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcAdmin
         fields = ('role','is_deleted','user')
-        # read_only_fields = ['is_active',]
+        read_only_fields = ['is_deleted',]
+
+    def update(self, instance, validated_data):
+        user_obj = instance.user
+        instance.role = validated_data.get('role')
+        user_obj.first_name = validated_data['user'].get('first_name')
+        user_obj.last_name = validated_data['user'].get('last_name')
+        user_obj.save()
+        instance.save()
+        return instance
+
+    # def delete

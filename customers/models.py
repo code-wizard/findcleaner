@@ -31,7 +31,7 @@ class FcServiceRequest(models.Model):
                                          related_name="provider_service_request", null=True)
     customer = models.ForeignKey(FcCustomer, on_delete=models.SET_NULL, related_name="customer", null=True)
     address = models.CharField(max_length=255, null=True)
-    coords = ArrayField(models.IntegerField(null=True), size=2, null=True)
+    coords = ArrayField(models.FloatField(null=True), size=2, null=True)
     requirement_description = models.TextField(_('Service Requirement'), max_length=500, null=True, blank=True)
     service_required_on = models.DateTimeField(_('Service requested On'), null=True, blank=True)
     # expected_start_time = models.TimeField(_('Expected Start Time'), null=True, blank=True)

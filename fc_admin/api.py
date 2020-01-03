@@ -61,25 +61,22 @@ class FcAdminListView(generics.ListAPIView):
     serializer_class = FcAdminSerializer
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('role','user__first_name','user__last_name')
+    search_fields = ('role','user__first_name','user__last_name','user__email','user__is_active')
     ordering = ('role','user__first_name','user__last_name')
     # permission_classes = (permissions.IsAuthenticated,)
-    queryset = FcAdmin.objects.all()
+    queryset = FcAdmin.objects.filter(is_deleted=False,user__is_staff=True).order_by('-user__created_at')
 
 
-class FcAdminUpdateView(generics.RetrieveUpdateAPIView):
+class FcAdminUpdateView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FcAdminSerializer
 
     def get_object(self):
         id = self.kwargs.get('staff_id')
-        staff = get_object_or_404(FcAdmin,user__id = id)
+        staff = get_object_or_404(FcAdmin,user__id = id,is_deleted=False)
         return staff
 
-    def patch(self, request, *args, **kwargs):
-        # self.request = request
-        staff_obj = self.get_object()
-        staff_obj.soft_delete()
-        return Response(data=staff_obj)
-
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
+        return Response({'message':'deleted'})
 
 

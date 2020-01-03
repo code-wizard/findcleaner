@@ -23,8 +23,9 @@ class AllUsers(generics.ListAPIView):
     ordering = ('account_type',)  # Default ordering
 
     def get_queryset(self):
-        qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
-        # print(qs.first().__class__)
+        qs = FcUser.objects.filter(is_superuser=False)
+        qs = qs.filter(Q(account_type=FcUser.FcAccountType.CUSTOMER) |Q(account_type=FcUser.FcAccountType.PROVIDER) ).order_by('-created_at')
+        # qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(first_name=query)|
@@ -37,7 +38,10 @@ class AllUsers_NoPgaination(generics.ListAPIView):
     permission_classes = (IsStaff,)
 
     def get_queryset(self):
-        qs = FcUser.objects.filter(is_superuser=False).order_by('-created_at')
+        qs = FcUser.objects.filter(is_superuser=False)
+        qs = qs.filter(
+            Q(account_type=FcUser.FcAccountType.CUSTOMER) | Q(account_type=FcUser.FcAccountType.PROVIDER)).order_by(
+            '-created_at')
         query = self.kwargs.get('query')
         if query:
             qs = qs.filter(Q(first_name=query)|
@@ -106,18 +110,21 @@ class ActiveSession(generics.ListAPIView):
     """
     serializer_class = DashBoardActiveSessionSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    # search_fields = ('account_type','username', 'first_name','last_name','email')
-    # ordering = ('first_name',)  # Default ordering
+    search_fields = ('service_required_on', 'payment_mode', 'status', 'requirement_description', 'service_deliver_on',
+                     'customer__user__first_name', 'service_provider__provider__user__first_name')
+    ordering = (
+    'service_required_on', 'service_deliver_on', 'service_provider__provider__user__first_name')  # Default ordering
+    # permission_classes = (permissions.IsAuthenticated,)
+
 
     def get_queryset(self):
-        qs = FcServiceRequest.objects.filter(status='ongoing').order_by('-created_at')
-        query = self.kwargs.get('query')
-        if query:
-            qs = qs.filter(Q(requirement_description=query)|
-                                                  Q(customer__user__first_name=query))
-        return qs
+            qs = FcServiceRequest.objects.filter(status='ongoing').order_by('-created_at')
+            query = self.kwargs.get('query')
+            if query:
+                qs = qs.filter(Q(requirement_description=query)|
+                                                      Q(customer__user__first_name=query))
+            return qs
 
 
 class ActiveSessionNoPagination(generics.ListAPIView):

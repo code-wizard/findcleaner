@@ -19,7 +19,7 @@ class FcProvider(models.Model):
     state = models.CharField(max_length=255)
     user = models.OneToOneField(FcUser, on_delete=models.SET_NULL, related_name="provider_info", null=True)
     address = models.CharField(max_length=255)
-    coords = ArrayField(models.IntegerField(), size=2)
+    coords = ArrayField(models.FloatField(null=True), size=2, null=True)
     type = models.CharField(choices=PROVIDER_TYPES, default='individual', max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

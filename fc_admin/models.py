@@ -6,6 +6,14 @@ STAFF_ACCOUNT_TYPE = (('admin','Admin'),('staff','Staff'),('manager','Manager'))
 FcUser = get_user_model()
 
 
+class FcAdminManager(models.Manager):
+    def get_query_set(self):
+        return self.filter(is_deleted=False,user__is_staff=True)
+
+    # def get_object(self):
+    #     return self.model.objects.get(pk=self.request.user.pk, is_deleted=False)
+    #
+
 class FcAdmin(models.Model):
     class FcAdminRole:
         ADMIN = STAFF_ACCOUNT_TYPE[0][0]
@@ -16,11 +24,11 @@ class FcAdmin(models.Model):
     role = models.CharField(max_length=60, choices=STAFF_ACCOUNT_TYPE, default='staff')
     is_deleted = models.BooleanField(default=False)
     # created_by = models.ForeignKey("fc_admin.FcStaff", related='my_created_users')
+    objects = FcAdminManager()
 
-    def soft_delete(self):
+    def delete(self, *args, **kwargs):
         self.is_deleted = True
         self.save()
-        return self
 
     # class Meta:
     #     db_table = "fc_admin"

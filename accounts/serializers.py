@@ -156,7 +156,6 @@ class FcRegisterSerializer(serializers.ModelSerializer):
         fields = ("email","first_name","last_name","is_staff","phone_number","password")
 
 
-
 class FcUserDetailsSerializer(serializers.ModelSerializer):
     user_type = serializers.SerializerMethodField(read_only=True)
 
@@ -177,5 +176,6 @@ class FcUserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = auth_models.FcUser
+        read_only_fields = ('is_staff','is_superuser','is_active','email','username',)
         fields = ('id', 'username',"first_name","last_name",
-                  'email', 'is_active','user_type', "date_joined", "is_superuser","is_staff")
+                  'email', 'is_active','user_type', "date_joined","is_staff")
