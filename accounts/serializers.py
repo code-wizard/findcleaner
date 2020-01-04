@@ -80,7 +80,7 @@ class FcPasswordResetSerializer(PasswordResetSerializer):
         self.reset_form = self.password_reset_form_class(data=self.initial_data)
         if not self.reset_form.is_valid():
             raise serializers.ValidationError(self.reset_form.errors)
-        elif not auth_models.Fc.objects.filter(email=email).exists():
+        elif not auth_models.FcUser.objects.filter(email=email).exists():
                 raise serializers.ValidationError("Invalid email")
         return email
 
