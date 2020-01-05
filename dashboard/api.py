@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from .models import FcSystemSettings
 from core.permissions import IsCustomer,IsProvider,IsStaff
-
+import datetime
 
 
 class AllUsers(generics.ListAPIView):
@@ -89,7 +89,7 @@ class AllTransactionView(generics.ListAPIView):
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('service_required_on','payment_mode','status','requirement_description','service_deliver_on','customer__user__first_name','service_provider__provider__user__first_name')
     ordering = ('service_required_on','service_deliver_on','service_provider__provider__user__first_name')  # Default ordering
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     # queryset = FcServiceRequest.objects.all()
 
@@ -97,10 +97,34 @@ class AllTransactionView(generics.ListAPIView):
         qs = FcServiceRequest.objects.all().order_by('-created_at')
         status = self.kwargs.get('status')
         if status:
+            print('status here')
             qs = qs.filter(Q(status=status))
         return qs
 
 
+class FilterTransactionView(generics.ListAPIView):
+    """
+    List all trasaction, to get active or ongoing trasaction, pass
+    the keyword "status={completed,ongoing...}"
+     """
+    serializer_class = DashBoardActiveSessionSerializer
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('service_required_on','payment_mode','status','requirement_description','service_deliver_on','customer__user__first_name','service_provider__provider__user__first_name')
+    ordering = ('service_required_on','service_deliver_on','service_provider__provider__user__first_name')  # Default ordering
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        qs = FcServiceRequest.objects.all().order_by('-created_at')
+        from_date = self.kwargs.get('from_date')
+        to_date = self.kwargs.get('to_date')
+        if from_date and to_date:
+            try:
+                qs = qs.filter(service_required_on__gte=datetime.datetime.strptime(from_date,'%Y-%m-%d'),
+                               service_required_on__lte=datetime.datetime.strptime(to_date,'%Y-%m-%d'))
+            except:
+                return qs
+        return qs
 
 
 class ActiveSession(generics.ListAPIView):
@@ -115,7 +139,7 @@ class ActiveSession(generics.ListAPIView):
                      'customer__user__first_name', 'service_provider__provider__user__first_name')
     ordering = (
     'service_required_on', 'service_deliver_on', 'service_provider__provider__user__first_name')  # Default ordering
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
     def get_queryset(self):
