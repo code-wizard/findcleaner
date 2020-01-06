@@ -65,8 +65,8 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
 
 class FcSearchProviders(generics.ListAPIView):
     """
-        initiate a new request by searching for provider who have specified
-         a service or description of a service. pass query = "specified keyword"
+        initiate a new request by getting list of providers who have signed up for the passed service_id,
+        passs the following as url param: service_id, neighborhood and locality and customer_coords as (lat,lng)
     """
     serializer_class = FcProviderServicesSerializer
     # permission_classes = (IsCustomer,)
@@ -76,21 +76,20 @@ class FcSearchProviders(generics.ListAPIView):
     ordering = ('service__service',)  # Default ordering
 
     def get_queryset(self):
-        service_id = self.kwargs.get("service_id")
-        qs = FcProviderServices.objects.filter(service_id=service_id)
-        # query = self.kwargs.get('query')
-        # if query:
-        #     qs = qs.filter(Q(service__service__icontains=query)|
-        #                                           Q(service_description__icontains=query))
-        neighborhood = self.kwargs.get("neighborhood","")
-        locality = self.kwargs.get("locality","")
+        qs = FcProviderServices.objects.all()
+        service_id = self.request.GET.get("service_id",None)
+        if service_id:
+            qs = qs.filter(service_id=service_id)
+
+        neighborhood = self.request.GET.get("neighborhood","")
+        locality = self.request.GET.get("locality","")
         qs = qs.filter(Q(provider__address__icontains=neighborhood) & Q(provider__address__icontains=locality))
         return qs
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context.update({
-            'customer_coords': self.kwargs.get("customer_coords")
+            'customer_coords': self.request.GET.get("customer_coords","")
         })
         return context
 
