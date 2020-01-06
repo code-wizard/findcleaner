@@ -17,6 +17,7 @@ from accounts.serializers import FcLoginSerializer
 
 User = get_user_model()
 
+
 class FcCustomerLoginView(LoginView):
 
     serializer_class = FcLoginSerializer
@@ -75,12 +76,23 @@ class FcSearchProviders(generics.ListAPIView):
     ordering = ('service__service',)  # Default ordering
 
     def get_queryset(self):
-        qs = FcProviderServices.objects.all()
-        query = self.kwargs.get('query')
-        if query:
-            qs = qs.filter(Q(service__service__icontains=query)|
-                                                  Q(service_description__icontains=query))
+        service_id = self.kwargs.get("service_id")
+        qs = FcProviderServices.objects.filter(service_id=service_id)
+        # query = self.kwargs.get('query')
+        # if query:
+        #     qs = qs.filter(Q(service__service__icontains=query)|
+        #                                           Q(service_description__icontains=query))
+        neighborhood = self.kwargs.get("neighborhood","")
+        locality = self.kwargs.get("locality","")
+        qs = qs.filter(Q(provider__address__icontains=neighborhood) & Q(provider__address__icontains=locality))
         return qs
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({
+            'customer_coords': self.kwargs.get("customer_coords")
+        })
+        return context
 
 
 class UpdateRequestView(generics.RetrieveUpdateAPIView):

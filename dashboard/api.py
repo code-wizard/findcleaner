@@ -120,8 +120,8 @@ class FilterTransactionView(generics.ListAPIView):
         to_date = self.kwargs.get('to_date')
         if from_date and to_date:
             try:
-                qs = qs.filter(service_required_on__gte=datetime.datetime.strptime(from_date,'%Y-%m-%d'),
-                               service_required_on__lte=datetime.datetime.strptime(to_date,'%Y-%m-%d'))
+                qs = qs.filter(service_deliver_on__gte=datetime.datetime.strptime(from_date,'%Y-%m-%d'),
+                               service_deliver_on__lte=datetime.datetime.strptime(to_date,'%Y-%m-%d'))
             except:
                 return qs
         return qs

@@ -10,6 +10,8 @@ django-rest-auth==0.9.5
 django-rest-swagger==2.2.0
 djangorestframework==3.10.3
 djangorestframework-jwt==1.11.0
+geographiclib==1.50
+geopy==1.20.0
 idna==2.8
 itypes==1.1.0
 Jinja2==2.10.3

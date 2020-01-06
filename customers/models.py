@@ -39,7 +39,7 @@ class FcServiceRequest(models.Model):
     total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)
     payment_mode = models.CharField(_('Payment Mode'),choices=payment_mode, default='cash',max_length=500, null=True, blank=True)
-    service_deliver_on = models.CharField(_('Service Delivered on'),max_length=500, null=True, blank=True)
+    service_deliver_on = models.DateField(_('Service Delivered on'),max_length=500, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
