@@ -65,6 +65,13 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
 class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
+    distance = serializers.SerializerMethodField(read_only=True)
+
+    def get_distance(self,obj):
+        customer_coords = self.context.get("customer_coords")
+        return obj.get_provider_distance(customer_coords)
+
+
 
     def get_name(self,obj):
         return obj.get_name()

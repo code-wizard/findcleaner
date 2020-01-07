@@ -3,6 +3,7 @@ from django.db import models
 from services.models import FcService
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+from core.utils import calculate_provider_distance
 
 PROVIDER_TYPES = (('individual', 'Individual'), ('Agency', 'Agency'))
 PROVIDER_STATUS = (('active', 'Active'), ('disabled', 'disabled'))
@@ -49,6 +50,13 @@ class FcProviderServices(models.Model):
         firsname = self.provider.user.first_name
         lastname = self.provider.user.last_name
         return "{0} {1}".format(firsname, lastname)
+
+    def get_provider_distance(self,customer_coords):
+        provider_coods = self.provider.coords
+        dist_in_km = calculate_provider_distance(provider_coods,customer_coords)
+        return dist_in_km
+
+
 
 
     class Meta:

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import datetime
+from corsheaders.defaults import default_headers
 
 from decouple import config, Csv
 
@@ -23,10 +24,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%2tuoxn-^r&=i8ug37g6$+x-tnefce19wav36srs3)#pt6@w1('
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
@@ -58,12 +59,14 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth.registration',
     'rest_framework_swagger',
-    'fc_admin'
+    'corsheaders',
+
     'accounts',
     'customers',
     'providers',
     'services',
     'dashboard',
+    'fc_admin',
 ]
 SITE_ID = 1
 
@@ -73,6 +76,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 MEDIA_URL = '/media/'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -217,7 +222,7 @@ ACCOUNT_UNIQUE_EMAIL = True
 
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ['http://localhost:4200']
+CORS_ORIGIN_WHITELIST = ['http://dev.findcleaner.ng','http://localhost:4200','http://findcleaner.netlify.com']
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',
@@ -227,7 +232,7 @@ CORS_ALLOW_METHODS = (
     'PUT',
 )
 
-CORS_ALLOW_HEADERS = [
+CORS_ALLOW_HEADERS = list(default_headers) + [
     'accept',
     'accept-encoding',
     'authorization',
