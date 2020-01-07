@@ -89,7 +89,8 @@ class FcSearchProviders(generics.ListAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context.update({
-            'customer_coords': self.request.GET.get("customer_coords",0)
+            'lat': self.request.GET.get("lat"),
+            'lng': self.request.GET.get("lng")
         })
         return context
 

@@ -43,17 +43,21 @@ class FcProviderServices(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return   "{}-{}".format(self.provider.name, self.service.get_category_name())
     def get_service_name(self):
         return self.service.service
 
     def get_name(self):
-        firsname = self.provider.user.first_name
-        lastname = self.provider.user.last_name
-        return "{0} {1}".format(firsname, lastname)
+        # firsname = self.provider.user.first_name
+        # lastname = self.provider.user.last_name
+        return "{0}".format(self.provider.name)
 
-    def get_provider_distance(self,customer_coords):
+    def get_provider_distance(self,lat, lng):
         provider_coods = self.provider.coords
-        dist_in_km = calculate_provider_distance(provider_coods,customer_coords)
+
+        dist_in_km = calculate_provider_distance((float(-provider_coods[0]), float(provider_coods[1])),
+                                                 (-float(lat),float(lng)))
         return dist_in_km
 
 
@@ -69,4 +73,4 @@ class FcProviderServices(models.Model):
 #     rating = models.IntegerField(max=5)
 #     provider
 #     service
-#
+

@@ -66,12 +66,20 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
     distance = serializers.SerializerMethodField(read_only=True)
+    rating = serializers.SerializerMethodField(read_only=True)
+    address = serializers.SerializerMethodField(read_only=True)
+
+    def get_address(self, obj):
+        return obj.provider.address
 
     def get_distance(self,obj):
-        customer_coords = self.context.get("customer_coords")
-        return obj.get_provider_distance(customer_coords)
+        lat = self.context.get("lat")
+        lng = self.context.get("lng")
+        return obj.get_provider_distance(lat, lng)
 
 
+    def get_rating(self, obj):
+        return "No rating"
 
     def get_name(self,obj):
         return obj.get_name()
@@ -81,8 +89,8 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcProviderServices
-        # fields = '__all__'
-        exclude = ('provider',)
+        fields = '__all__'
+        # exclude = ('provider',)
         # read_only_fields = ('provider',)
 
 
