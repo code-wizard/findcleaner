@@ -3,6 +3,7 @@ from rest_auth.views import LoginView
 from rest_framework import permissions, viewsets,generics,filters,status,views
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from customers.models import status
 
 from .serializers import FcServiceRequestSerializer, FcCustomerSignUpSerializer
 from providers.models import FcProviderServices
@@ -106,3 +107,18 @@ class UpdateRequestView(generics.RetrieveUpdateAPIView):
         return request_obj
 
 
+class FcCustomerServiceHistoryViews(generics.ListAPIView):
+    """
+        get customer task history by passing the customer username. if status is passed. it will be filtered
+        based on that else it will show only completed tasks. status can be (new,completed,ongoing,accepted,cancel)
+    """
+    serializer_class = FcServiceRequestSerializer
+    # permission_classes = (IsCustomer,)
+    # queryset = FcServiceRequest.objects.all()
+
+    def get_queryset(self):
+        username = self.kwargs.get("username")
+        user = get_object_or_404(User,username=username)
+        status = self.request.GET.get('status','completed')
+        history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
+        return history_tasks

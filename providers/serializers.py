@@ -75,6 +75,9 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     def get_distance(self,obj):
         lat = self.context.get("lat")
         lng = self.context.get("lng")
+        if not lat or not lng:
+            lat = 0.0
+            lng = 0.0
         return obj.get_provider_distance(lat, lng)
 
 

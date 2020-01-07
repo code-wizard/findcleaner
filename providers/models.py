@@ -55,7 +55,6 @@ class FcProviderServices(models.Model):
 
     def get_provider_distance(self,lat, lng):
         provider_coods = self.provider.coords
-
         dist_in_km = calculate_provider_distance((float(-provider_coods[0]), float(provider_coods[1])),
                                                  (-float(lat),float(lng)))
         return dist_in_km

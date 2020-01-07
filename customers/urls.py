@@ -5,6 +5,7 @@ app_name = "customers"
 
 urlpatterns = [
     path('search-providers', api.FcSearchProviders.as_view()),
+    path('work-history/<username>', api.FcCustomerServiceHistoryViews.as_view()),
     path('login/', api.FcCustomerLoginView.as_view()),
     path('signup/', api.FcCustomerRegisterView.as_view()),
     path('schedule/', api.NewServiceRequestSchedule.as_view()),
