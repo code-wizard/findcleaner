@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth.registration',
     'rest_framework_swagger',
-
+    'fc_admin'
     'accounts',
     'customers',
     'providers',
