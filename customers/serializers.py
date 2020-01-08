@@ -4,6 +4,8 @@ from .models import FcCustomer
 from accounts.serializers import FcRegisterSerializer
 from accounts.signals import send_confirmation_email
 from accounts.models import FcUser
+from services.serializers import ServiceSerializer
+from providers.serializers import FcProviderServicesSerializer
 
 
 class FcCustomerSignUpSerializer(FcRegisterSerializer):
@@ -27,6 +29,8 @@ class FcCustomerSignUpSerializer(FcRegisterSerializer):
 #
 
 class FcServiceRequestSerializer(serializers.ModelSerializer):
+    service = ServiceSerializer(read_only=True)
+    service_provider = FcProviderServicesSerializer(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
 
     def get_name(self, obj):

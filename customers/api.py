@@ -117,8 +117,8 @@ class FcCustomerServiceHistoryViews(generics.ListAPIView):
     # queryset = FcServiceRequest.objects.all()
 
     def get_queryset(self):
-        username = self.kwargs.get("username")
-        user = get_object_or_404(User,username=username)
+        email = self.kwargs.get("email")
+        user = get_object_or_404(User,email=email)
         status = self.request.GET.get('status','completed')
         history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
         return history_tasks
