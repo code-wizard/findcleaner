@@ -61,7 +61,6 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
                   'coords','services_info', 'name', 'address', 'city', 'state')
 
 
-
 class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)

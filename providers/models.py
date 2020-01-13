@@ -45,6 +45,7 @@ class FcProviderServices(models.Model):
 
     def __str__(self):
         return   "{}-{}".format(self.provider.name, self.service.get_category_name())
+
     def get_service_name(self):
         return self.service.service
 

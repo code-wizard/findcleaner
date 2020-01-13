@@ -19,6 +19,9 @@ from core.permissions import IsCustomer,IsProvider,IsStaff
 
 
 class FcProviderLoginView(LoginView):
+    """
+    Use this endpoint to login as a provider by providing your email and password
+    """
     serializer_class = FcLoginSerializer
 
     def get_response(self):
@@ -46,11 +49,20 @@ class FcProviderLoginView(LoginView):
 
 
 class FcProviderRegisterView(APIView):
+    """
+    provider signup endpoint. pass a list of services to services_info field
+    in the format below
+
+    [{"service_id":1,"billing_rate":2500,
+    "service_description":"description"},
+    {"service_id":2,"billing_rate":2300,
+    "service_description":"good service"}]
+    """
     serializer_class = FcProviderSignUpSerializer
 
     def post(self, request):
         data = request.data.dict()
-        data["coords"] = [9434034,-4343]
+        # data["coords"] = [9434034,-4343]
         serializer = self.serializer_class(data=data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -161,7 +173,7 @@ class FcRequestByStatus(ListAPIView):
 
 class FcProviderServiceList(ListAPIView):
     serializer_class = FcProviderServicesSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def get_queryset(self):
         user = self.request.user
@@ -172,7 +184,7 @@ class FcProviderServiceList(ListAPIView):
 
 class FcUpdateProviderServiceView(RetrieveUpdateDestroyAPIView):
     serializer_class = FcProviderServicesSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def get_object(self):
         user = self.request.user
