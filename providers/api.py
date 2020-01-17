@@ -61,7 +61,11 @@ class FcProviderRegisterView(APIView):
     serializer_class = FcProviderSignUpSerializer
 
     def post(self, request):
-        data = request.data.dict()
+        try:
+            data = request.data.dict()
+        except:
+            data = request.data
+        print('data',data)
         # data["coords"] = [9434034,-4343]
         serializer = self.serializer_class(data=data, context={"request": request})
         serializer.is_valid(raise_exception=True)

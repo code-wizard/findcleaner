@@ -18,7 +18,8 @@ class FcProviderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcProvider
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('created_at','updated_at')
 
 
 class FcProviderSignUpSerializer(FcRegisterSerializer):
@@ -44,12 +45,13 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
             provider_info.save()
 
             # create provider services
-            FcProviderServices.objects.bulk_create(
-                [FcProviderServices(service_id=service["service_id"],
-                                   billing_rate = service["billing_rate"],
-                                   service_description=service["service_description"],
-                                   provider=provider_info)
-                 for service in eval(services_info)])
+            if not services_info:
+                FcProviderServices.objects.bulk_create(
+                    [FcProviderServices(service_id=service["service_id"],
+                                       billing_rate = service["billing_rate"],
+                                       service_description=service["service_description"],
+                                       provider=provider_info)
+                     for service in eval(services_info)])
 
             request = self.context.get("request")
             send_confirmation_email.send(sender=FcProvider, request=request, user=user, signup=True)
@@ -112,5 +114,6 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcServiceRequest
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('created_at','updated_at')
         read_only_fields = ['service_provider','customer','status']

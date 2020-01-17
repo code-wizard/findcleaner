@@ -28,6 +28,7 @@ class FcAdmin(models.Model):
 
     def delete(self, *args, **kwargs):
         self.is_deleted = True
+        self.user.is_active = False
         self.save()
 
     # class Meta:
