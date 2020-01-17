@@ -45,7 +45,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
             provider_info.save()
 
             # create provider services
-            if not services_info:
+            if services_info:
                 FcProviderServices.objects.bulk_create(
                     [FcProviderServices(service_id=service["service_id"],
                                        billing_rate = service["billing_rate"],
