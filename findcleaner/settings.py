@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'services',
     'dashboard',
     'fc_admin',
+    'rating',
 ]
 SITE_ID = 1
 

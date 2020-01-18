@@ -81,9 +81,8 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
             lng = 0.0
         return obj.get_provider_distance(lat, lng)
 
-
     def get_rating(self, obj):
-        return "No rating"
+        return obj.get_my_ratings()
 
     def get_name(self,obj):
         return obj.get_name()

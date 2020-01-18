@@ -32,6 +32,7 @@ urlpatterns = [
     path('services/', include("services.urls")),
     path('dashboard/', include("dashboard.urls")),
     path('staff/', include("fc_admin.urls")),
+    path('rating/', include("rating.urls")),
 ]
 if settings.DEBUG:
     urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
