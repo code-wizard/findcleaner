@@ -43,6 +43,12 @@ class FcServiceRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.service.service
+
+    def get_service_name(self):
+        return self.service.service
+
     class Meta:
         db_table = "fc_service_request"
         verbose_name = _("Service Request")

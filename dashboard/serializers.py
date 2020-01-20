@@ -10,13 +10,29 @@ from services.serializers import ServiceSerializer
 class DashBoardUsersViewSerializer(serializers.Serializer):
     def to_representation(self, obj):
         id = obj.get_platform_id()
-        print('id',id)
         return {
             'username' : obj.username,
             'first_name' : obj.first_name,
             'last_name': obj.last_name,
             'account_type': obj.account_type,
             obj.account_type+'_id':id,
+            'email': obj.email,
+            'phone_number': obj.phone_number
+        }
+
+
+
+class RatedUsersViewSerializer(serializers.Serializer):
+    def to_representation(self, obj):
+        id = obj.get_platform_id()
+        rating = obj.get_ratings()
+        return {
+            'username' : obj.username,
+            'first_name' : obj.first_name,
+            'last_name': obj.last_name,
+            'account_type': obj.account_type,
+            obj.account_type+'_id':id,
+            'rating':rating,
             'email': obj.email,
             'phone_number': obj.phone_number
         }

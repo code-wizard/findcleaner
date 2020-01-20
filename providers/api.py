@@ -13,9 +13,11 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import FcProvider
 from accounts.serializers import FcLoginSerializer
-User = get_user_model()
 from rest_framework import permissions, status
 from core.permissions import IsCustomer,IsProvider,IsStaff
+
+
+User = get_user_model()
 
 
 class FcProviderLoginView(LoginView):
@@ -72,6 +74,7 @@ class FcProviderRegisterView(APIView):
         serializer.save()
         return Response({'message': 'success'})
 
+
 class FcNewProviderService(CreateAPIView):
     """
     Use this end point to add service to provider by passing service ID
@@ -96,7 +99,6 @@ class FcProviderServiceList(ListAPIView):
     def get_queryset(self):
         service_id = self.kwargs.get('service_id')
         return FcProviderServices.objects.filter(service__id=service_id)
-
 
 
 class FcProviderSummaryDashboard(APIView):
@@ -140,18 +142,14 @@ class FcMyServiceRequest(ListAPIView):
     View all logged in provider request.
     """
     serializer_class = FcServiceRequestSerializer
-    # permission_classes = (IsProvider,)
+    permission_classes = (IsProvider,)
 
     def get_queryset(self):
-        # print('get here')
         user = self.request.user
-        # print('user',user)
-
-        provider = user.provider_info.all().first()
-        # print('provider',provider)
-        myservices = provider.my_services.all()
-        service_provider_obj = myservices.first()
-        my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
+        provider = user.provider_info
+        # myservices = provider.my_services.all()
+        # service_provider_obj = myservices.first()
+        my_service_requests = FcServiceRequest.objects.filter(service_provider__provider=provider)
         return my_service_requests
 
 

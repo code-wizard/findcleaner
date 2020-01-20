@@ -1,5 +1,5 @@
 from rest_framework import permissions, viewsets,generics,filters,status,views
-from .serializers import DashBoardUsersViewSerializer,UsersViewSerializer,DashBoardActiveSessionSerializer,FcSettingsSerializer
+from .serializers import DashBoardUsersViewSerializer,UsersViewSerializer,DashBoardActiveSessionSerializer,FcSettingsSerializer,RatedUsersViewSerializer
 from accounts.models import FcUser
 from customers.models import FcServiceRequest
 from core import pagination
@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from .models import FcSystemSettings
 from core.permissions import IsCustomer,IsProvider,IsStaff
 import datetime
+from rating.models import FcRating
 
 
 class AllUsers(generics.ListAPIView):
@@ -46,6 +47,17 @@ class AllUsers_NoPgaination(generics.ListAPIView):
         if query:
             qs = qs.filter(Q(first_name=query)|
                                                   Q(last_name=query))
+        return qs
+
+
+class AllRatedUsers(generics.ListAPIView):
+    serializer_class = RatedUsersViewSerializer
+    permission_classes = (IsStaff,)
+
+    def get_queryset(self):
+        user_rated = FcRating.objects.all().values('user__username').distinct()
+        qs = FcUser.objects.filter(is_superuser=False, username__in=user_rated)
+
         return qs
 
 
