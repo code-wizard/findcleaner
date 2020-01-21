@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
+# from rating.models import FcRating
 
 account_types = (("customer", "Customer"), ("provider", "Service Provider"), ('admin', 'Admin'))
 
@@ -83,6 +84,12 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
         db_table = "fc_user"
         verbose_name = _("User")
         verbose_name_plural = _('Users')
+
+    def get_ratings(self):
+        ratings = self.my_created_rating.first()
+        # print('ratings',ratings)
+        # ratings = FcRating.objects.get(service_request__service_provider__provider__user=self)
+        return ratings
 
     def get_full_name(self):
         return "{} {}".format(self.first_name, self.last_name)

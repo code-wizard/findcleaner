@@ -5,6 +5,7 @@ from .models import FcSystemSettings
 from providers.serializers import FcProviderServicesSerializer
 from customers.serializers import FcServiceRequestSerializer,FcCustomerSerializer
 from services.serializers import ServiceSerializer
+from rating.serializers import FcRatingUpdateSerializer
 
 
 class DashBoardUsersViewSerializer(serializers.Serializer):
@@ -25,7 +26,8 @@ class DashBoardUsersViewSerializer(serializers.Serializer):
 class RatedUsersViewSerializer(serializers.Serializer):
     def to_representation(self, obj):
         id = obj.get_platform_id()
-        rating = obj.get_ratings()
+        rating = FcRatingUpdateSerializer(obj.get_ratings()).data
+        print('rating',rating)
         return {
             'username' : obj.username,
             'first_name' : obj.first_name,

@@ -9,7 +9,7 @@ from providers.serializers import FcServiceRequestSerializer
 class FcRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcRating
-        exclude = ('is_active','is_deleted')
+        exclude = ('is_active','is_deleted',)
         # read_only_fields = ('user',)
 
     def validate(self, attrs):
