@@ -52,7 +52,11 @@ class AllUsers_NoPgaination(generics.ListAPIView):
 
 class AllRatedUsers(generics.ListAPIView):
     serializer_class = RatedUsersViewSerializer
-    permission_classes = (IsStaff,)
+    # permission_classes = (IsStaff,)
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('account_type',)
+    ordering = ('last_name','last_name')  # Default
 
     def get_queryset(self):
         user_rated = FcRating.objects.all().values('user__username').distinct()

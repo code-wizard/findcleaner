@@ -7,6 +7,9 @@ from providers.serializers import FcServiceRequestSerializer
 
 
 class FcRatingSerializer(serializers.ModelSerializer):
+    user = FcUserDetailsSerializer(read_only=True)
+    service_request = FcServiceRequestSerializer(read_only=True)
+
     class Meta:
         model = FcRating
         exclude = ('is_active','is_deleted',)
