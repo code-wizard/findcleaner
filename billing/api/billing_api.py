@@ -40,5 +40,25 @@ class NewBillingView(APIView):
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
 
+def verify_payment(request,billing_reference):
+    refrence_code = billing_reference
+    PaystackAPI = load_lib()
+    paystack_instance = PaystackAPI()
+    response = paystack_instance.verify_payment(refrence_code)
+
+    # check if payment has been made,
+    if response[0]:
+        billing_info = get_object_or_404(FcBillingInfo,billing_reference=billing_reference)
+        billing_info.status = billing_info.Billing_Status.PAID
+        billing_info.save()
+
+        context = {
+            'status':'Successful',
+            'message': response[1]
+        }
+        return JsonResponse(context)
+
+    return JsonResponse(response)
+
 
 

@@ -14,6 +14,6 @@ app_name = "billing"
 
 urlpatterns = [
     path("new-customer", views.new_customer, name='new_customer'),
-    # path("charge", views.charge, name='charge_customer'),
+    path("verify_payment/<billing_reference>", billing_api.verify_payment, name='verify_payment'),
     path('new-billing',billing_api.NewBillingView.as_view(),name='new_billing'),
 ]

@@ -58,6 +58,9 @@ class PaystackAPI(object):
     def get_customer(self,cust_email):
         return self.customer_api.get_customer(cust_email)
 
+    def verify_payment(self,code,**kwargs):
+        return self.transaction_api.verify_payment(code,**kwargs)
+
     def charge_customer(self, data):
         return self.transaction_api.initialize_transaction(data)
 
