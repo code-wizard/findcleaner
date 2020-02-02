@@ -8,7 +8,7 @@ from django.views.generic.base import TemplateResponseMixin, View
 
 #
 # class MmConfirmEmailView(ConfirmEmailView):
-#     template_name = "authentication/account_activate_confirm.html"
+#     template_name = "accounts/account_activate_confirm.html"
 #
 #
 #
@@ -18,7 +18,7 @@ from django.views.generic.base import TemplateResponseMixin, View
 
 
 class FcConfirmEmailView(TemplateResponseMixin, View):
-    template_name = "authentication/account_activate_confirm.html"
+    template_name = "accounts/account_activate_confirm.html"
 
     def get(self, *args, **kwargs):
         # context = {"domain":connection.tenant.domain_url}
@@ -30,7 +30,7 @@ account_confirm = FcConfirmEmailView.as_view()
 
 
 class ConfirmEmailView(APIView):
-    template_name = "authentication/account_activate_confirm.html"
+    template_name = "accounts/account_activate_confirm.html"
     permission_classes = ()
 
     def get_object(self, queryset=None):
@@ -38,7 +38,6 @@ class ConfirmEmailView(APIView):
         print('key',key)
         emailconfirmation = EmailConfirmationHMAC.from_key(key)
         return emailconfirmation
-
 
     def post(self, *args, **kwargs):
         self.object = confirmation = self.get_object()

@@ -6,7 +6,7 @@ User = get_user_model()
 
 class EmailAuthBackend(object):
     """
-    A custom authentication backend. Allows users to log in using their email address.
+    A custom accounts backend. Allows users to log in using their email address.
     """
 
     def authenticate(self, request, email=None, password=None, **kwargs):

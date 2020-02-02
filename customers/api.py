@@ -43,6 +43,7 @@ class FcCustomerRegisterView(APIView):
         serializer.save()
         return Response(serializer.data)
 
+
 class NewServiceRequestSchedule(generics.ListCreateAPIView):
     """
     Schedule a new request by passing the provider id selcted from
@@ -107,6 +108,21 @@ class UpdateRequestView(generics.RetrieveUpdateAPIView):
         return request_obj
 
 
+class FcCancelServiceRequestView(APIView):
+    serializer_class = FcServiceRequestSerializer
+
+    def get_object(self):
+        query = self.kwargs.get('request_id')
+        request_obj = get_object_or_404(FcServiceRequest, id=query)
+        return request_obj
+
+    def patch(self, request,*args, **kwargs):
+        serializer = self.serializer_class(self.get_object(),data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(status=FcServiceRequest.FcRequestStatus.CANCELLED)
+        return Response(serializer.data)
+
+
 class FcCustomerServiceHistoryViews(generics.ListAPIView):
     """
         get customer task history by passing the customer username. if status is passed. it will be filtered
@@ -117,8 +133,8 @@ class FcCustomerServiceHistoryViews(generics.ListAPIView):
     # queryset = FcServiceRequest.objects.all()
 
     def get_queryset(self):
-        email = self.kwargs.get("email")
-        user = get_object_or_404(User,email=email)
+        user_id = self.kwargs.get("user_id")
+        user = get_object_or_404(User,id=user_id)
         status = self.request.GET.get('status','completed')
         history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
         return history_tasks

@@ -26,6 +26,13 @@ class FcCustomer(models.Model):
 
 
 class FcServiceRequest(models.Model):
+    class FcRequestStatus:
+        NEW = status[0][0]
+        ACCEPTED = status[1][0]
+        ONGOING = status[2][0]
+        CANCELLED = status[3][0]
+        COMPLETED = status[4][0]
+
     service = models.ForeignKey(FcService, on_delete=models.CASCADE, related_name='service_requests', null=True)
     service_provider = models.ForeignKey(FcProviderServices, on_delete=models.SET_NULL,
                                          related_name="provider_service_request", null=True)

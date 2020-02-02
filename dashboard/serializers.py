@@ -27,7 +27,6 @@ class RatedUsersViewSerializer(serializers.Serializer):
     def to_representation(self, obj):
         id = obj.get_platform_id()
         rating = FcRatingUpdateSerializer(obj.get_ratings()).data
-        print('rating',rating)
         return {
             'username' : obj.username,
             'first_name' : obj.first_name,

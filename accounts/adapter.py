@@ -49,9 +49,9 @@ class AccountAdapter(DefaultAccountAdapter):
             "key": emailconfirmation.key
         }
         if signup:
-            email_template = 'authentication/email/activate_email'
+            email_template = 'accounts/email/activate_email'
         else:
-            email_template = 'authentication/email/activate_email'
+            email_template = 'accounts/email/activate_email'
         self.send_mail(email_template,
                        emailconfirmation.email_address.email,
                        ctx)

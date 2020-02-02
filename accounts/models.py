@@ -4,8 +4,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 # from rating.models import FcRating
+import os
 
 account_types = (("customer", "Customer"), ("provider", "Service Provider"), ('admin', 'Admin'))
+
+def avatar_upload_path(instance, filename):
+    filename, ext = os.path.splitext(filename)
+    filename = "{0}{1}".format(int(timezone.now().timestamp()), ext)
+    return "user/upload/avatar/{0}".format(filename)
 
 
 class FcUserManager(BaseUserManager):
@@ -47,6 +53,7 @@ class FcUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_('username'), max_length=500, blank=True, unique=True)
     first_name = models.CharField(max_length=40)
     last_name = models.CharField(max_length=40)
+    avatar = models.ImageField(upload_to=avatar_upload_path, null=True, blank=True)
     phone_number = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)

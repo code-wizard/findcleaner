@@ -59,6 +59,10 @@ class AllRatedUsers(generics.ListAPIView):
     ordering = ('last_name','last_name')  # Default
 
     def get_queryset(self):
+        query = self.kwargs.get("account_type")
+        print('query',query)
+        # if query:
+        #     print('query',query)
         user_rated = FcRating.objects.all().values('user__username').distinct()
         qs = FcUser.objects.filter(is_superuser=False, username__in=user_rated)
 

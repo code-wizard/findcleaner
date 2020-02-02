@@ -19,6 +19,8 @@ class PaystackAPI(object):
                 setattr(self, key, value)
         self.transaction_api = transaction.Transaction(self.make_request)
         self.customer_api = transaction.BillingCustomer(self.make_request)
+        self.provider_api = transaction.EarningProvider(self.make_request)
+        self.bank_api = transaction.BankInfo(self.make_request)
         # self.transfer_api = transaction.Transfer(self.make_request, self.async_make_request)
         # self.webhook_api = transaction.Webhook(self.secret_key)
         # self.subscription_api = transaction.PlanAndSubscription(self.make_request)
@@ -64,7 +66,17 @@ class PaystackAPI(object):
     def charge_customer(self, data):
         return self.transaction_api.initialize_transaction(data)
 
+    def new_transfer_reciepient(self,data):
+        return self.provider_api.new_transfer_recipient(data)
 
+    def initiate_transfer(self,data):
+        return self.provider_api.initiate_transfer(data)
+
+    def verify_transfer(self,data):
+        return self.provider_api.verify_transfer(data)
+
+    def get_bank_list_api(self):
+        return self.bank_api.get_bank_list()
 
 def load_lib(config=None):
     """

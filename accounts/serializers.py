@@ -10,6 +10,7 @@ from customers.models import FcCustomer
 from providers.models import FcProvider
 from django.utils.translation import ugettext_lazy as _
 from allauth.account.utils import send_email_confirmation
+from allauth.account.utils import user_pk_to_url_str
 
 UserModel = get_user_model()
 
@@ -62,8 +63,10 @@ class FcLoginSerializer(serializers.Serializer):
                 if not email_address.verified:
                     raise serializers.ValidationError(_('E-mail is not verified.'))
 
-
+        uidb36 = user_pk_to_url_str(user)
         attrs['user'] = user
+        attrs['uid'] = uidb36
+        print('attrs',attrs)
         return attrs
 
 
@@ -177,5 +180,5 @@ class FcUserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = auth_models.FcUser
         read_only_fields = ('is_staff','is_superuser','is_active','email','username',)
-        fields = ('id', 'username',"first_name","last_name",
+        fields = ('id', 'username',"first_name","last_name","phone_number",
                   'email', 'is_active','user_type', "date_joined","is_staff")

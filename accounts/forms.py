@@ -8,6 +8,9 @@ from django.utils.translation import gettext_lazy as _
 from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.urls import reverse
+from allauth.account.utils import user_pk_to_url_str, user_username, perform_login, filter_users_by_email
+from allauth.utils import set_form_field_order, build_absolute_uri
 
 UserModel = get_user_model()
 
@@ -57,6 +60,13 @@ class PasswordResetForm(forms.Form):
         """
         email = self.cleaned_data["email"]
         for user in self.get_users(email):
+            temp_key = token_generator.make_token(user)
+
+            path = reverse("accounts:auth_password_reset_confirm",
+                           kwargs=dict(uidb64=user_pk_to_url_str(user),
+                                       key=temp_key))
+            url = build_absolute_uri(
+                request, path)
             if not domain_override:
                 current_site = get_current_site(request)
                 site_name = current_site.name
@@ -64,15 +74,17 @@ class PasswordResetForm(forms.Form):
             else:
                 site_name = domain = domain_override
             context = {
+                'password_reset_url':url,
                 'email': email,
                 'domain': domain,
                 'site_name': site_name,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),#.decode(),
                 'user': user,
                 'token': token_generator.make_token(user),
                 'protocol': 'https' if use_https else 'http',
                 **(extra_email_context or {}),
             }
+            print('context',context)
             self.send_mail(
                 subject_template_name, email_template_name, context, from_email,
                 email, html_email_template_name=html_email_template_name,

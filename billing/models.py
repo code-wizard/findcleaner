@@ -4,6 +4,7 @@ from uuid import uuid4
 
 
 status = (("pending", "Pending"),("paid", "Paid"), ("cancelled", "Cancelled"))
+EarningStatus = (("pending", "Pending"),("initiated", "Initiated"),("recieved", "Recieved"))
 
 
 class FcBillingInfo(models.Model):
@@ -23,4 +24,18 @@ class FcBillingInfo(models.Model):
     def amount_to_charge(self):
         return self.service_request.total_amount
 
-    # def
+
+class FcProviderEearningInfo(models.Model):
+    class Status:
+        PENDING = status[0][0]
+        INITIATED = status[1][0]
+        RECIEVED = status[2][0]
+    uuid = models.UUIDField(default=uuid4, editable=False, primary_key=True)
+    reference = models.CharField(max_length=255, null=True, blank=True)
+    billing_info = models.OneToOneField(FcBillingInfo, on_delete=models.CASCADE, null=True)
+    remarks = models.CharField(max_length=255, null=True, default="successful transaction")
+    service_request = models.OneToOneField(FcServiceRequest, on_delete=models.DO_NOTHING, related_name="service_earning", null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=125,choices=EarningStatus,default='pending')
+    updated_at = models.DateTimeField(auto_now=True)
+
