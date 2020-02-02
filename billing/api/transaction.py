@@ -17,6 +17,42 @@ class BillingCustomer(BaseClass):
         return self.result_format(response)
 
 
+class EarningProvider(BaseClass):
+
+    def new_transfer_recipient(self, data):
+        path = "/transferrecipient"
+        response = self.make_request('POST', path, json=data)
+        # return self.result_format(response)
+        if response.status_code >= 400:
+            return response.json()
+        return response.json()['data']['recipient_code']
+
+    def initiate_transfer(self,data):
+        path = "/transfer"
+        response = self.make_request('POST', path, json=data)
+        # return self.result_format(response)
+        if response.status_code >= 400:
+            return response.json()
+        return response.json()['data']
+
+    def verify_transfer(self,data):
+        path = "/transfer/verify/reference"
+        response = self.make_request('GET', path, json=data)
+        if response.status_code >= 400:
+            return response.json()
+        return response.json()['data']
+
+
+class BankInfo(BaseClass):
+
+    def get_bank_list(self):
+        path = "/bank"
+        response = self.make_request('GET', path)
+        if response.status_code >= 400:
+            return response.json()
+        return response.json()['data']
+
+
 class Transaction(BaseClass):
 
     def verify_result(self, response, **kwargs):
@@ -44,6 +80,7 @@ class Transaction(BaseClass):
             # 'callback_url': kwargs['callback_url']
         }
         response = self.make_request('POST', path, json=json_data)
+        print('response',response)
         return self.result_format(response)
 
     def verify_payment(self,code, **kwargs):
@@ -61,5 +98,7 @@ class Transaction(BaseClass):
         }
         response = self.make_request('POST', path, json=json_data)
         return self.result_format(response)
+
+
 
 

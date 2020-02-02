@@ -1,6 +1,6 @@
-from billing.models import FcBillingInfo
-from billing.serializers import FcBillingInfoSerializer
-from rest_framework.generics import CreateAPIView
+from billing.models import FcBillingInfo,FcProviderEearningInfo
+from billing.serializers import FcBillingInfoSerializer,FcEarningInfoSerializer,FcInitiateCustomerPaymentInfoSerializer
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from customers.models import FcServiceRequest
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +9,7 @@ from billing.utils import load_lib
 from accounts.serializers import FcUserDetailsSerializer
 from uuid import uuid4
 from django.http import JsonResponse
+from rest_framework.validators import ValidationError
 
 
 class NewBillingView(APIView):
@@ -41,6 +42,13 @@ class NewBillingView(APIView):
         return JsonResponse({"data": data})
 
 
+def all_banks_list(request):
+    PaystackAPI = load_lib()
+    paystack_instance = PaystackAPI()
+    response = paystack_instance.get_bank_list_api()
+    return JsonResponse({"banks":response})
+
+
 def verify_payment(request,billing_reference):
     refrence_code = billing_reference
     PaystackAPI = load_lib()
@@ -58,8 +66,40 @@ def verify_payment(request,billing_reference):
             'message': response[1]
         }
         return JsonResponse(context)
+    return JsonResponse({
+        "status": "erorr",
+        "message": response[1]
+    })
 
-    return JsonResponse(response)
+
+class FcEarningRequestView(CreateAPIView):
+    serializer_class = FcInitiateCustomerPaymentInfoSerializer
+    queryset = FcProviderEearningInfo.objects.all()
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        service_request_id = serializer.validated_data['service_request']
+        if not FcServiceRequest.objects.filter(id=service_request_id).exists():
+            raise ValidationError("Service request not found with this ID")
+
+        serializer.save(service_request=service_request_id)
+        return JsonResponse({"status":"successfully done"})
 
 
+class FcEarningInfo(RetrieveAPIView):
+    serializer_class = FcEarningInfoSerializer
 
+    def get_object(self):
+        query = self.kwargs.get('service_request_id')
+        service_request = get_object_or_404(FcServiceRequest,id=query)
+        return service_request
+
+
+def verify_transfer(request,reference):
+    refrence_code = reference
+    PaystackAPI = load_lib()
+    paystack_instance = PaystackAPI()
+    response = paystack_instance.verify_transfer(refrence_code)
+
+    return JsonResponse({"response":response})
