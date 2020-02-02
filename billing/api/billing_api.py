@@ -40,6 +40,7 @@ class NewBillingView(APIView):
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
 
+
 def verify_payment(request,billing_reference):
     refrence_code = billing_reference
     PaystackAPI = load_lib()

@@ -44,15 +44,16 @@ class FcProviderServices(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return   "{}-{}".format(self.provider.name, self.service.get_category_name())
+        return  "{}-{}".format(self.provider.name, self.service.get_category_name())
 
     def get_service_name(self):
         return self.service.service
 
     def get_my_ratings(self):
-        service_request = self.provider_service_request.first()
-        if service_request:
-            return service_request.request_ratings.all().values('rating_score','review','date_rated')
+        if self.provider_service_request.exists():
+            pass
+            # print(self.provider_service_request.request_ratings, 'Hello world')
+            # return self.provider_service_request.request_ratings.all().values('rating_score', 'review','date_rated')
         return 'No review yet'
 
     def get_name(self):

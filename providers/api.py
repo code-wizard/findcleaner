@@ -107,12 +107,11 @@ class FcProviderSummaryDashboard(APIView):
     """
     def get(self,request):
         user = self.request.user
-        provider = user.provider_info.all().first()
+        provider = user.provider_info
         # print('provider',provider)
         # provider_service_request
         try:
             myservices = provider.my_services.all()
-            print('myservices',myservices)
             service_provider_obj = myservices.first()
             my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
             completed_service = my_service_requests.filter(status='completed')
@@ -125,12 +124,11 @@ class FcProviderSummaryDashboard(APIView):
             cancelled_service = 0
             schedule_service = 0
             my_revenue = 0
-        print('my_revenue',my_revenue)
         dashbooard_summary = {
             'total_service':total_service,
             'cancelled_service':cancelled_service,
             'schedule_service':schedule_service,
-            'my_revenue':my_revenue
+            'my_revenue': 0 if my_revenue == None else my_revenue
         }
 
         result = FcProviderDashboard(dashbooard_summary).data
@@ -165,11 +163,17 @@ class FcRequestByStatus(ListAPIView):
         status = self.kwargs.get('status')
         user = self.request.user
 
-        provider = user.provider_info.all().first()
+        provider = user.provider_info
 
         myservices = provider.my_services.all()
+        print(user.provider_info)
+        print(myservices, 'Services')
         service_provider_obj = myservices.first()
-        my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj,status=status)
+        print(service_provider_obj, 'Hello')
+        if status == 'all':
+            my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
+        else:
+            my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk, status=status)
         return my_service_requests
 
 

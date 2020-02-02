@@ -38,11 +38,13 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
                                                       state=validated_data.get('state'),
                                                       city=validated_data.get('city'),
                                                       address=validated_data.get('address'),
+                                                      type=validated_data.get('type'),
                                                       name=validated_data.get('name'),
                                                       coords=coords)
 
 
             provider_info.save()
+            print('Save info')
 
             # create provider services
             if services_info:
@@ -60,7 +62,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
     class Meta:
         model = FcProvider
         fields = ('email', 'first_name', 'last_name', 'phone_number','password',
-                  'coords','services_info', 'name', 'address', 'city', 'state')
+                  'coords','services_info', 'name', 'address', 'city', 'state', 'type')
 
 
 class FcProviderServicesSerializer(serializers.ModelSerializer):
@@ -104,9 +106,10 @@ class FcProviderDashboard(serializers.Serializer):
     my_revenue = serializers.IntegerField(read_only=True)
 
 
-
 class FcServiceRequestSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
+    customer_name = serializers.CharField(source="customer.user.get_full_name", read_only=True)
+    billing_rate = serializers.CharField(source="service_provider.billing_rate", read_only=True)
 
     def get_service_name(self, obj):
         return obj.get_service_name()
