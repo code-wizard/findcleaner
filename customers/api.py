@@ -59,7 +59,6 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        print(user.customer_info.first())
         customer = user.customer_info.first()
         requests = FcServiceRequest.objects.filter(customer=customer)
         return requests

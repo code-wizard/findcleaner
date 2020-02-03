@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_auth.views import LoginView
 
-from .serializers import FcProviderServicesSerializer,FcProviderDashboard,\
-    FcServiceRequestSerializer,FcProviderSignUpSerializer, FcProviderSerializer
+from providers import serializers
 from .models import FcProviderServices
 from accounts.serializers import FcUserDetailsSerializer
 from rest_framework.generics import CreateAPIView,ListAPIView, RetrieveUpdateDestroyAPIView
@@ -13,8 +12,9 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import FcProvider
 from accounts.serializers import FcLoginSerializer
-from rest_framework import permissions, status
 from core.permissions import IsCustomer,IsProvider,IsStaff
+from rest_framework import filters,status
+from core import pagination
 
 
 User = get_user_model()
@@ -34,7 +34,7 @@ class FcProviderLoginView(LoginView):
         }
         serializer = serializer_class(instance=data, context={'request': self.request})
 
-        provider = FcProviderSerializer(self.user.provider_info).data
+        provider = serializers.FcProviderSerializer(self.user.provider_info).data
         return Response({"user": serializer.data, 'provider': provider}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
@@ -60,7 +60,7 @@ class FcProviderRegisterView(APIView):
     {"service_id":2,"billing_rate":2300,
     "service_description":"good service"}]
     """
-    serializer_class = FcProviderSignUpSerializer
+    serializer_class = serializers.FcProviderSignUpSerializer
 
     def post(self, request):
         try:
@@ -79,7 +79,7 @@ class FcNewProviderService(CreateAPIView):
     """
     Use this end point to add service to provider by passing service ID
     """
-    serializer_class = FcProviderServicesSerializer
+    serializer_class = serializers.FcProviderServicesSerializer
     # permission_classes = (IsProvider,)
 
     def perform_create(self, serializer):
@@ -93,7 +93,7 @@ class FcProviderServiceList(ListAPIView):
     Get a list of providers who have signed up for the specified service,
     by passing the service id.
     """
-    serializer_class = FcProviderServicesSerializer
+    serializer_class = serializers.FcProviderServicesSerializer
     # permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -131,7 +131,7 @@ class FcProviderSummaryDashboard(APIView):
             'my_revenue': 0 if my_revenue == None else my_revenue
         }
 
-        result = FcProviderDashboard(dashbooard_summary).data
+        result = serializers.FcProviderDashboard(dashbooard_summary).data
         return Response(result)
 
 
@@ -139,7 +139,7 @@ class FcMyServiceRequest(ListAPIView):
     """
     View all logged in provider request.
     """
-    serializer_class = FcServiceRequestSerializer
+    serializer_class = serializers.FcServiceRequestSerializer
     permission_classes = (IsProvider,)
 
     def get_queryset(self):
@@ -157,7 +157,7 @@ class FcRequestByStatus(ListAPIView):
         new, accepted, ongoing, cancel and completed
 
     """
-    serializer_class = FcServiceRequestSerializer
+    serializer_class = serializers.FcServiceRequestSerializer
 
     def get_queryset(self):
         status = self.kwargs.get('status')
@@ -166,10 +166,7 @@ class FcRequestByStatus(ListAPIView):
         provider = user.provider_info
 
         myservices = provider.my_services.all()
-        print(user.provider_info)
-        print(myservices, 'Services')
         service_provider_obj = myservices.first()
-        print(service_provider_obj, 'Hello')
         if status == 'all':
             my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
         else:
@@ -177,9 +174,29 @@ class FcRequestByStatus(ListAPIView):
         return my_service_requests
 
 
+class FcProviderEarnings(ListAPIView):
+    serializer_class = serializers.FcServiceRequestEarningsSerializer
+    permission_classes = (IsProvider,)
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('service__service',)
+    ordering = ('service__service',)  # Default ordering
+
+    def get_queryset(self):
+        user = self.request.user
+        user = get_object_or_404(User,id=user.id)
+        provider = user.provider_info
+
+        myservices = provider.my_services.all()
+        service_provider_obj = myservices.first()
+        history_earnings = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
+
+        return history_earnings
+
+
 class FcProviderServiceList(ListAPIView):
-    serializer_class = FcProviderServicesSerializer
-    # permission_classes = (IsProvider,)
+    serializer_class = serializers.FcProviderServicesSerializer
+    permission_classes = (IsProvider,)
 
     def get_queryset(self):
         user = self.request.user
@@ -189,7 +206,7 @@ class FcProviderServiceList(ListAPIView):
 
 
 class FcUpdateProviderServiceView(RetrieveUpdateDestroyAPIView):
-    serializer_class = FcProviderServicesSerializer
+    serializer_class = serializers.FcProviderServicesSerializer
     # permission_classes = (IsProvider,)
 
     def get_object(self):

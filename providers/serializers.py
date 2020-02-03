@@ -119,3 +119,15 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         # fields = '__all__'
         exclude = ('created_at','updated_at')
         read_only_fields = ['service_provider','customer','status']
+
+
+class FcServiceRequestEarningsSerializer(serializers.ModelSerializer):
+    service_name = serializers.SerializerMethodField(read_only=True)
+
+    def get_service_name(self, obj):
+        return obj.get_service_name()
+
+    class Meta:
+        model = FcServiceRequest
+        fields = ('service_name','service_required_on','total_amount','created_at','status')
+

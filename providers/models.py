@@ -50,9 +50,9 @@ class FcProviderServices(models.Model):
         return self.service.service
 
     def get_my_ratings(self):
-        service_request = self.provider_service_request
+        service_request = self.provider_service_request.first()
         if service_request:
-            return service_request.first().request_ratings.all().values('rating_score','review','date_rated')
+            return service_request.request_ratings.all().values('rating_score','review','date_rated')
         return 'No review yet'
 
     def get_name(self):

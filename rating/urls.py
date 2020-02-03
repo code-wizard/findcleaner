@@ -10,4 +10,3 @@ urlpatterns = [
     path('update/<rating_id>', FcRatingUpdateView.as_view()),
     path('user/<user_id>', GetUserRatingView.as_view()),
 ]
-

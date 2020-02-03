@@ -18,6 +18,6 @@ urlpatterns = [
     path('new-billing',billing_api.NewBillingView.as_view(),name='new_billing'),
     path('supported-bank-list', billing_api.all_banks_list, name='bank-list'),
     path('claim-earning', billing_api.FcEarningRequestView.as_view(), name='claim-earning'),
-    path('earning_info/<service_request_id>', billing_api.FcEarningInfo.as_view(), name='banklist'),
+    path('earning_info/<service_request_id>', billing_api.FcEarningInfo.as_view(), name='earning-info'),
     path('verify-transfer/<reference>', billing_api.verify_transfer, name='verify-transfer'),
 ]
