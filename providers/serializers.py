@@ -71,6 +71,12 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
+    service_image = serializers.SerializerMethodField(read_only=True)
+
+    def get_service_image(self, obj):
+        request = self.context.get('request')
+        avatar = obj.get_service_avatar().url
+        return request.build_absolute_uri(avatar)
 
     def get_address(self, obj):
         return obj.provider.address
@@ -129,5 +135,5 @@ class FcServiceRequestEarningsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcServiceRequest
-        fields = ('service_name','service_required_on','total_amount','created_at','status')
+        fields = ('service_name','service_required_on','total_amount','created_at','status',)
 

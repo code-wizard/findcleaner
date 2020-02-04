@@ -174,9 +174,11 @@ class FcRequestByStatus(ListAPIView):
         return my_service_requests
 
 
+# class FcProvideEarningView()
+
 class FcProviderEarnings(ListAPIView):
     serializer_class = serializers.FcServiceRequestEarningsSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('service__service',)
@@ -190,8 +192,16 @@ class FcProviderEarnings(ListAPIView):
         myservices = provider.my_services.all()
         service_provider_obj = myservices.first()
         history_earnings = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
-
         return history_earnings
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        my_revenue = qs.aggregate(Sum('total_amount'))[
+            'total_amount__sum']
+
+        serializer  = self.get_serializer(qs, many=True)
+        response_data = {"total_earning":my_revenue, "result":serializer.data}
+        return Response(response_data)
 
 
 class FcProviderServiceList(ListAPIView):
