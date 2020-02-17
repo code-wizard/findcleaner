@@ -1,3 +1,5 @@
+from rest_framework import permissions
+
 from billing.models import FcBillingInfo,FcProviderEearningInfo
 from billing.serializers import FcBillingInfoSerializer,FcEarningInfoSerializer,FcInitiateCustomerPaymentInfoSerializer
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -14,6 +16,7 @@ from rest_framework.validators import ValidationError
 
 class NewBillingView(APIView):
     serializer_class = FcBillingInfoSerializer
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_object(self, service_request_id):
         service_request = get_object_or_404(FcServiceRequest,id=service_request_id)
@@ -48,8 +51,7 @@ def all_banks_list(request):
     response = paystack_instance.get_bank_list_api()
     return JsonResponse({"banks":response})
 
-
-def verify_payment(request,billing_reference):
+def verify_payment(request, billing_reference):
     refrence_code = billing_reference
     PaystackAPI = load_lib()
     paystack_instance = PaystackAPI()
@@ -92,7 +94,7 @@ class FcEarningInfo(RetrieveAPIView):
 
     def get_object(self):
         query = self.kwargs.get('service_request_id')
-        service_request = get_object_or_404(FcServiceRequest,id=query)
+        service_request = get_object_or_404(FcServiceRequest, id=query)
         return service_request
 
 

@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.db import transaction
+from django.db.models import Avg
 
 from accounts.serializers import FcRegisterSerializer, FcUserDetailsSerializer
+from rating.models import FcRating
 from .models import FcProviderServices, FcProvider
 from rest_framework import serializers
 from customers.models import FcServiceRequest
@@ -15,6 +18,13 @@ from accounts.signals import send_confirmation_email
 #         fields = '__all__'
 
 class FcProviderSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.SerializerMethodField(read_only=True)
+
+    def get_avatar_url(self, obj):
+        try:
+            return "{}{}".format(settings.DOMAIN, obj.user.avatar.url)
+        except:
+            return None
 
     class Meta:
         model = FcProvider
@@ -65,12 +75,40 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
                   'coords','services_info', 'name', 'address', 'city', 'state', 'type')
 
 
+class FcMyServicesSerializer(serializers.ModelSerializer):
+    service_name = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+    address = serializers.SerializerMethodField(read_only=True)
+    avatar = serializers.SerializerMethodField(read_only=True)
+
+    def get_avatar(self, obj):
+        return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
+
+    def get_name(self,obj):
+        return obj.get_name()
+
+    def get_service_name(self,obj):
+        return obj.get_service_name()
+
+    class Meta:
+        model = FcProviderServices
+        fields = ("service_name", "name", "address", "id", "avatar", "created_at", "updated_at")
+
+
 class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
+    avatar = serializers.SerializerMethodField(read_only=True)
+    provider_user_id = serializers.IntegerField(source="provider.user.id", read_only=True)
+
+    def get_avatar(self, obj):
+        try:
+            return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
+        except:
+            return None
 
     def get_address(self, obj):
         return obj.provider.address
@@ -82,9 +120,15 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
             lat = 0.0
             lng = 0.0
         return obj.get_provider_distance(lat, lng)
+    #
+    # def get_rating(self, obj):
+    #     return []
 
     def get_rating(self, obj):
-        return obj.get_my_ratings()
+        rating = FcRating.objects.filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
+        return rating.get("rating_score__avg")
+
+        # return obj.get_my_ratings()
 
     def get_name(self,obj):
         return obj.get_name()
@@ -109,7 +153,21 @@ class FcProviderDashboard(serializers.Serializer):
 class FcServiceRequestSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     customer_name = serializers.CharField(source="customer.user.get_full_name", read_only=True)
+    customer_image = serializers.SerializerMethodField(read_only=True)
     billing_rate = serializers.CharField(source="service_provider.billing_rate", read_only=True)
+    customer_user_id = serializers.CharField(source="customer.user.id", read_only=True)
+    provider_user_id = serializers.CharField(source="service_provider.provider.user.id", read_only=True)
+    customer_rating = serializers.SerializerMethodField(read_only=True)
+
+    def get_customer_image(self, obj):
+        try:
+            return "{}{}".format(settings.DOMAIN, obj.customer.user.avatar.url)
+        except:
+            return None
+
+    def get_customer_rating(self, obj):
+        rating = obj.request_ratings.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
+        return rating.get("rating_score__avg")
 
     def get_service_name(self, obj):
         return obj.get_service_name()
@@ -118,7 +176,7 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         model = FcServiceRequest
         # fields = '__all__'
         exclude = ('created_at','updated_at')
-        read_only_fields = ['service_provider','customer','status']
+        read_only_fields = ['service_provider','customer']
 
 
 class FcServiceRequestEarningsSerializer(serializers.ModelSerializer):

@@ -40,7 +40,7 @@ class FcServiceRequest(models.Model):
     address = models.CharField(max_length=255, null=True)
     coords = ArrayField(models.FloatField(null=True), size=2, null=True)
     requirement_description = models.TextField(_('Service Requirement'), max_length=500, null=True, blank=True)
-    service_required_on = models.DateField(_('Service requested On'), null=True, blank=True, max_length=20)
+    service_required_on = models.DateTimeField(_('Service requested On'), null=True, blank=True, max_length=20)
     # expected_start_time = models.TimeField(_('Expected Start Time'), null=True, blank=True)
     expected_hours_to_complete = models.CharField(_('Expected Complete hours'),max_length=500, null=True, blank=True)
     total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
@@ -51,7 +51,8 @@ class FcServiceRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.service.service
+        return "{}-{}".format(self.service.service, self.service_provider.provider.name)
+        # return "{}-{}".format(self.service.service, self.service_provider.provider.name)
 
     def get_service_name(self):
         return self.service.service
@@ -59,6 +60,7 @@ class FcServiceRequest(models.Model):
     class Meta:
         db_table = "fc_service_request"
         verbose_name = _("Service Request")
+        ordering = ('-created_at', )
 
     def get_customer_name(self):
         return self.customer.user.get_full_name()

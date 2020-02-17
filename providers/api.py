@@ -4,7 +4,8 @@ from rest_auth.views import LoginView
 from providers import serializers
 from .models import FcProviderServices
 from accounts.serializers import FcUserDetailsSerializer
-from rest_framework.generics import CreateAPIView,ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView, \
+    UpdateAPIView
 from rest_framework.views import  APIView
 from customers.models import FcServiceRequest
 from django.db.models import Sum
@@ -39,6 +40,7 @@ class FcProviderLoginView(LoginView):
 
     def post(self, request, *args, **kwargs):
         self.request = request
+        print(self.request.data, 'Hello world')
         self.serializer = self.get_serializer(data=self.request.data,
                                               context={'request': request, 'account_type': User.FcAccountType.PROVIDER})
         self.serializer.is_valid(raise_exception=True)
@@ -135,6 +137,26 @@ class FcProviderSummaryDashboard(APIView):
         return Response(result)
 
 
+class FcServiceRequestDetail(RetrieveAPIView):
+    serializer_class = serializers.FcServiceRequestSerializer
+    # permission_classes = (IsProvider,)
+
+    def get_object(self):
+        return get_object_or_404(FcServiceRequest, pk=self.request.query_params.get("id"))
+
+
+class FcUpdateServiceRequest(UpdateAPIView):
+    serializer_class = serializers.FcServiceRequestSerializer
+    permission_classes = (IsProvider, )
+
+    def get_object(self):
+        return get_object_or_404(FcServiceRequest, pk=self.kwargs.get("id"))
+
+    # def patch(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer =
+
+
 class FcMyServiceRequest(ListAPIView):
     """
     View all logged in provider request.
@@ -184,13 +206,13 @@ class FcProviderEarnings(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        user = get_object_or_404(User,id=user.id)
+        user = get_object_or_404(User, id=user.id)
         provider = user.provider_info
 
         myservices = provider.my_services.all()
         service_provider_obj = myservices.first()
         history_earnings = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
-
+        print(history_earnings)
         return history_earnings
 
 

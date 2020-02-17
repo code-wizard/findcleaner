@@ -7,8 +7,8 @@ from providers.serializers import FcServiceRequestSerializer
 
 
 class FcRatingSerializer(serializers.ModelSerializer):
-    user = FcUserDetailsSerializer(read_only=True)
-    service_request = FcServiceRequestSerializer(read_only=True)
+    user_detail = FcUserDetailsSerializer(read_only=True, source="user")
+    service_request_detail = FcServiceRequestSerializer(read_only=True, source="service_request")
 
     class Meta:
         model = FcRating
@@ -19,9 +19,11 @@ class FcRatingSerializer(serializers.ModelSerializer):
         if FcRating.objects.filter(user=attrs.get('user'),service_request=attrs.get('service_request')).exists():
             raise serializers.ValidationError("sorry, This user has already review the said service request.")
 
-        service_request_obj = get_object_or_404(FcServiceRequest,id=attrs.get('service_request').id) # FcServiceRequest.objects.filter()
+        service_request_obj = get_object_or_404(FcServiceRequest, id=attrs.get('service_request').id)
+        # FcServiceRequest.objects.filter()
         if service_request_obj.status != 'cancel' and service_request_obj.status != 'completed':
-            raise serializers.ValidationError("You can only review completed or cancelled task. This task is {0}".format(service_request_obj.status))
+            raise serializers.ValidationError("You can only review completed or cancelled task."
+                                              " This task is {0}".format(service_request_obj.status))
 
         return attrs
 

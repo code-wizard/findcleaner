@@ -28,10 +28,18 @@ class FcCustomerSignUpSerializer(FcRegisterSerializer):
 #
 #
 
+class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FcServiceRequest
+        fields = '__all__'
+
+
 class FcServiceRequestSerializer(serializers.ModelSerializer):
     service = ServiceSerializer(read_only=True)
     service_provider = FcProviderServicesSerializer(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
+    customer_user_id = serializers.IntegerField(source="customer.user.id", read_only=True)
 
     def get_name(self, obj):
         return obj.get_customer_name()

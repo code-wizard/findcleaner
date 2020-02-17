@@ -8,6 +8,8 @@ urlpatterns = [
         path('signup/', api.FcProviderRegisterView.as_view()),
         path('new-service/', api.FcNewProviderService.as_view()),
         path('my-services/', api.FcProviderServiceList.as_view()),
+        path('my-services/request/details', api.FcServiceRequestDetail.as_view()),
+        path('my-services/request/update/<id>/', api.FcUpdateServiceRequest.as_view()),
         path('my-service-update/<provider_service_id>', api.FcUpdateProviderServiceView.as_view()),
         path('summary/',api.FcProviderSummaryDashboard.as_view()),
         path('all-request/',api.FcMyServiceRequest.as_view()),

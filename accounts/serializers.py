@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from accounts.models import FcUser
@@ -6,6 +8,9 @@ from accounts.forms import PasswordResetForm
 from accounts import models as auth_models
 from django.conf import settings
 from django.db import transaction
+from PIL import Image
+
+from core.custom_fields import Base64ImageField
 from customers.models import FcCustomer
 from providers.models import FcProvider
 from django.utils.translation import ugettext_lazy as _
@@ -13,6 +18,28 @@ from allauth.account.utils import send_email_confirmation
 from allauth.account.utils import user_pk_to_url_str
 
 UserModel = get_user_model()
+
+
+class FcUserSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(write_only=True)
+
+    def validate_avatar(self, image):
+
+        if image:
+            img = Image.open(image)
+            fileName, fileExtension = os.path.splitext(image.name)
+            if not fileExtension in ['.jpeg', '.jpeg', '.png', '.jpg', ".JPG", ".PNG", ".JPEG"]:
+                raise serializers.ValidationError(_("Please use a JPEG or PNG image."))
+            # validate file size
+            if len(image) > 5000000:
+                raise serializers.ValidationError(_('Image file too large ( maximum 5mb )'))
+            # else:
+            #     raise forms.ValidationError(_("Couldn't read uploaded image"))
+        return image
+
+    class Meta:
+        model = FcUser
+        fields = ('avatar','first_name','last_name','email','phone_number',)
 
 
 class FcLoginSerializer(serializers.Serializer):
@@ -161,6 +188,13 @@ class FcRegisterSerializer(serializers.ModelSerializer):
 
 class FcUserDetailsSerializer(serializers.ModelSerializer):
     user_type = serializers.SerializerMethodField(read_only=True)
+    avatar_url = serializers.SerializerMethodField(read_only=True)
+
+    def get_avatar_url(self, obj):
+        try:
+            return "{}{}".format(settings.DOMAIN, obj.avatar.url)
+        except:
+            return ''
 
     def get_user_type(self,obj):
         return obj.get_user_type()
@@ -179,6 +213,6 @@ class FcUserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = auth_models.FcUser
-        read_only_fields = ('is_staff','is_superuser','is_active','email','username',)
+        read_only_fields = ('is_staff','is_superuser','is_active','email','username','avatar_url')
         fields = ('id', 'username',"first_name","last_name","phone_number",
-                  'email', 'is_active','user_type', "date_joined","is_staff")
+                  'email', 'is_active','user_type', "date_joined","is_staff", 'avatar_url')

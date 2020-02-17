@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from customers.models import status
 
-from .serializers import FcServiceRequestSerializer, FcCustomerSignUpSerializer
+from .serializers import FcServiceRequestSerializer, FcCustomerSignUpSerializer, FcCreateServiceRequestSerializer
 from providers.models import FcProviderServices
 from .models import FcCustomer
 from core import pagination
@@ -49,7 +49,7 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
     Schedule a new request by passing the provider id selcted from
     search providers/ endpoint
     """
-    serializer_class = FcServiceRequestSerializer
+    serializer_class = FcCreateServiceRequestSerializer
     # permission_classes = (IsCustomer,)
 
     def perform_create(self, serializer):
@@ -135,5 +135,6 @@ class FcCustomerServiceHistoryViews(generics.ListAPIView):
         user_id = self.kwargs.get("user_id")
         user = get_object_or_404(User,id=user_id)
         status = self.request.GET.get('status','completed')
-        history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
+        # history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
+        history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first())
         return history_tasks
