@@ -77,10 +77,9 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UsersViewSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-
     def get_object(self):
-        query = self.kwargs.get("username")
-        user = get_object_or_404(FcUser,username=query,is_superuser=False)
+        query = self.kwargs.get("user_email")
+        user = get_object_or_404(FcUser,email=query,is_superuser=False)
         return user
 
 
@@ -91,7 +90,6 @@ class TransactionView(generics.RetrieveUpdateDestroyAPIView):
         """
     serializer_class = DashBoardActiveSessionSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
 
     def get_object(self):
         query = self.kwargs.get("service_id")

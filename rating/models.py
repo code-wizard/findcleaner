@@ -16,7 +16,7 @@ class FcRating(models.Model):
     rating_score = models.IntegerField(default=1, validators=[MaxValueValidator(5), MinValueValidator(1)],
                                        null=True, blank=True)
     service_request = models.ForeignKey(FcServiceRequest, related_name='request_ratings', on_delete=models.DO_NOTHING)
-    provider_service = models.ForeignKey(FcProviderServices, related_name="provider_service_rating",
+    provider_service = models.ForeignKey(FcProviderServices, related_name="provider_service_rating", null=True,
                                          on_delete=models.DO_NOTHING)
     review = models.TextField('Review', max_length=200, null=True, blank=True)
     date_rated = models.DateTimeField(auto_now_add=True)

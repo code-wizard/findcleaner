@@ -48,7 +48,7 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         model = FcServiceRequest
         fields = '__all__'
         # exclude = ('user','address')
-        read_only_fields = ['customer','status']
+        read_only_fields = ['customer',]
 
 
 class FcCustomerSerializer(serializers.ModelSerializer):

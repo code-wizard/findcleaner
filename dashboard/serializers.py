@@ -43,7 +43,7 @@ class UsersViewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcUser
-        fields = ('username','first_name','last_name','account_type','email','phone_number',)
+        fields = ('username','first_name','last_name','account_type','email','phone_number','avatar',)
 
 
 class DashBoardActiveSessionSerializer(serializers.ModelSerializer):

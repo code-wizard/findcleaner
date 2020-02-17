@@ -16,7 +16,7 @@ from rest_framework.validators import ValidationError
 
 class NewBillingView(APIView):
     serializer_class = FcBillingInfoSerializer
-    permission_classes = (permissions.IsAuthenticated, )
+    # permission_classes = (permissions.IsAuthenticated, )
 
     def get_object(self, service_request_id):
         service_request = get_object_or_404(FcServiceRequest,id=service_request_id)
@@ -27,6 +27,9 @@ class NewBillingView(APIView):
         serializer.is_valid(raise_exception=True)
         service_request_id = serializer.validated_data['service_request'].id
         service_request = self.get_object(service_request_id)
+
+        if not service_request.status == FcServiceRequest.FcRequestStatus.COMPLETED:
+            raise ValidationError("Error!!! You can only make payment for completed service.")
 
         customer_user_info = service_request.customer.user
 

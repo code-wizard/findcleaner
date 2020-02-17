@@ -10,7 +10,7 @@ urlpatterns = [
     path('rated-users/all', api.AllRatedUsers.as_view()),
     path('active-session/', api.ActiveSession.as_view()),
     path('active-session/all', api.ActiveSessionNoPagination.as_view()),
-    path('user/<username>', api.UserUpdateDeleteView.as_view()),
+    path('user/<user_email>', api.UserUpdateDeleteView.as_view()),
     path('all-transaction/', api.AllTransactionView.as_view()),
     path('transactions/<from_date>/<to_date>', api.FilterTransactionView.as_view()),
     path('transaction/<service_id>', api.TransactionView.as_view()),
