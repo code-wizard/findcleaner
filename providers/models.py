@@ -49,6 +49,9 @@ class FcProviderServices(models.Model):
     def get_service_name(self):
         return self.service.service
 
+    def get_service_avatar(self):
+        return self.service.avatar
+
     def get_my_ratings(self):
         service_request = self.provider_service_request.first()
         if service_request:
@@ -73,11 +76,3 @@ class FcProviderServices(models.Model):
     class Meta:
         db_table = "fc_provider_services"
         verbose_name = _("Provider Service")
-
-#
-# class FcProviderRating(models.Model):
-#     user
-#     rating = models.IntegerField(max=5)
-#     provider
-#     service
-

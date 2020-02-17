@@ -4,6 +4,7 @@ from accounts.models import FcUser,FcAddress
 from django.utils.translation import ugettext_lazy as _
 from services.models import FcService
 from providers.models import FcProviderServices
+from django.db.models import Sum
 
 status = (("new", "New"),("accepted", "Accepted"), ("ongoing", "Ongoing"),("cancel", "Cancelled"), ("completed", "Completed"))
 payment_mode = (("cash", "Cash"), ("card", "Card"), ("bank_transfer", "Bank Transfer"))
@@ -64,4 +65,13 @@ class FcServiceRequest(models.Model):
 
     def get_customer_name(self):
         return self.customer.user.get_full_name()
+
+        # my_service_requests = self.service_provider # FcServiceRequest.objects.filter(service_provider=service_provider_obj)
+        # print('my_service_requests',my_service_requests)
+        # completed_service = # my_service_requests.filter(status='completed')
+        #
+        # my_revenue = 0 if completed_service == None else completed_service.aggregate(Sum('total_amount'))[
+        #     'total_amount__sum']
+        #
+        # return my_revenue
 

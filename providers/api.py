@@ -40,7 +40,6 @@ class FcProviderLoginView(LoginView):
 
     def post(self, request, *args, **kwargs):
         self.request = request
-        print(self.request.data, 'Hello world')
         self.serializer = self.get_serializer(data=self.request.data,
                                               context={'request': request, 'account_type': User.FcAccountType.PROVIDER})
         self.serializer.is_valid(raise_exception=True)
@@ -212,7 +211,7 @@ class FcProviderEarnings(ListAPIView):
         myservices = provider.my_services.all()
         service_provider_obj = myservices.first()
         history_earnings = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
-        print(history_earnings)
+
         return history_earnings
 
 

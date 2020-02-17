@@ -101,14 +101,6 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
-    avatar = serializers.SerializerMethodField(read_only=True)
-    provider_user_id = serializers.IntegerField(source="provider.user.id", read_only=True)
-
-    def get_avatar(self, obj):
-        try:
-            return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
-        except:
-            return None
 
     def get_address(self, obj):
         return obj.provider.address
@@ -120,15 +112,9 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
             lat = 0.0
             lng = 0.0
         return obj.get_provider_distance(lat, lng)
-    #
-    # def get_rating(self, obj):
-    #     return []
 
     def get_rating(self, obj):
-        rating = FcRating.objects.filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
-        return rating.get("rating_score__avg")
-
-        # return obj.get_my_ratings()
+        return obj.get_my_ratings()
 
     def get_name(self,obj):
         return obj.get_name()
