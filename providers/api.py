@@ -68,7 +68,6 @@ class FcProviderRegisterView(APIView):
             data = request.data.dict()
         except:
             data = request.data
-        print('data',data)
         # data["coords"] = [9434034,-4343]
         serializer = self.serializer_class(data=data, context={"request": request})
         serializer.is_valid(raise_exception=True)
@@ -203,6 +202,13 @@ class FcProviderEarnings(ListAPIView):
     search_fields = ('service__service',)
     ordering = ('service__service',)  # Default ordering
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({
+            'total_earnings': self.get_queryset().aggregate(Sum('total_amount'))['total_amount__sum']
+        })
+        return context
+
     def get_queryset(self):
         user = self.request.user
         user = get_object_or_404(User, id=user.id)
@@ -210,9 +216,10 @@ class FcProviderEarnings(ListAPIView):
 
         myservices = provider.my_services.all()
         service_provider_obj = myservices.first()
-        history_earnings = FcServiceRequest.objects.filter(service_provider=service_provider_obj.pk)
-
-        return history_earnings
+        if service_provider_obj:
+            history_earnings = FcServiceRequest.objects.filter(service_provider__in=myservices)#service_provider_obj.pk)
+            return history_earnings
+        return FcServiceRequest.objects.none()
 
 
 class FcProviderServiceList(ListAPIView):

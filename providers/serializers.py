@@ -165,13 +165,23 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         read_only_fields = ['service_provider','customer']
 
 
-class FcServiceRequestEarningsSerializer(serializers.ModelSerializer):
+class FcServiceRequestEarningsSerializer(serializers.Serializer):
     service_name = serializers.SerializerMethodField(read_only=True)
+
+    def to_representation(self, obj):
+        return {
+            'service_name' : self.get_service_name(obj),
+            'service_required_on': obj.service_required_on,
+            'total_amount': obj.total_amount,
+            'created_at': obj.created_at,
+            'status': obj.status,
+            'total_earnings': self.context.get('total_earnings'),
+        }
 
     def get_service_name(self, obj):
         return obj.get_service_name()
 
-    class Meta:
-        model = FcServiceRequest
-        fields = ('service_name','service_required_on','total_amount','created_at','status')
+    # class Meta:
+    #     model = FcServiceRequest
+    #     fields = ('service_name','service_required_on','total_amount','created_at','status')
 
