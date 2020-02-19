@@ -1,7 +1,9 @@
 from django.db import models
 from customers.models import FcServiceRequest
 from uuid import uuid4
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 status = (("pending", "Pending"),("paid", "Paid"), ("cancelled", "Cancelled"))
 EarningStatus = (("pending", "Pending"),("initiated", "Initiated"),("recieved", "Recieved"))
@@ -23,6 +25,27 @@ class FcBillingInfo(models.Model):
     @property
     def amount_to_charge(self):
         return self.service_request.total_amount
+
+
+class FcCustomerCardsDetails(models.Model):
+    user = models.ForeignKey(User, related_name='my_card_details', on_delete=models.DO_NOTHING, null=True)
+    authorization_code = models.CharField(max_length=255)
+    bin = models.CharField(max_length=255, null=True)
+    brand = models.CharField(max_length=255, null=True)
+    signature = models.CharField(max_length=255, null=True)
+    country_code = models.CharField(max_length=255, null=True)
+    last4 = models.CharField(max_length=255, null=True)
+    exp_month = models.CharField(max_length=255, null=True)
+    exp_year = models.CharField(max_length=255, null=True)
+    channel = models.CharField(max_length=255, null=True)
+    card_type = models.CharField(max_length=255, null=True)
+    bank = models.CharField(max_length=255, null=True)
+    reusable = models.BooleanField(default=True)
+    default = models.BooleanField(default=True)
+    status = models.CharField(max_length=125, default='active')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    billing_info = models.OneToOneField(FcBillingInfo, on_delete=models.CASCADE, related_name="billing_card_detail", null=True)
 
 
 class FcProviderEearningInfo(models.Model):

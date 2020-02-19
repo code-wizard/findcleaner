@@ -53,12 +53,11 @@ class PaystackAPI(object):
         }
         return await options[method](url, headers=headers, **kwargs)
 
-
-    def new_customer(self, data):
-        return self.customer_api.create_customer(data)
-
     def get_customer(self,cust_email):
         return self.customer_api.get_customer(cust_email)
+
+    def recurrent_charge(self,data):
+        return self.transaction_api.charge_authorization(data)
 
     def verify_payment(self,code,**kwargs):
         return self.transaction_api.verify_payment(code,**kwargs)

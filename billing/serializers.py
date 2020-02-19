@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FcBillingInfo,FcProviderEearningInfo
+from .models import FcBillingInfo,FcProviderEearningInfo,FcCustomerCardsDetails
 from customers.models import FcServiceRequest
 from billing.utils import load_lib
 from uuid import uuid4
@@ -16,6 +16,13 @@ class FcBillingInfoSerializer(serializers.ModelSerializer):
 class FcEarningInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcProviderEearningInfo
+        fields = '__all__'
+        # read_only_fields = ('reference','status',)
+
+
+class FcCustomerCardsDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FcCustomerCardsDetails
         fields = '__all__'
         # read_only_fields = ('reference','status',)
 

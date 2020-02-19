@@ -88,7 +88,7 @@ class Transaction(BaseClass):
         response = self.make_request("GET", path)
         return self.result_format(response)
 
-    def recurrent_charge(self, **kwargs):
+    def charge_authorization(self, kwargs):
 
         path = "/transaction/charge_authorization"
         json_data = {

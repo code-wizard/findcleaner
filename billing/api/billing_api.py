@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
-from billing.models import FcBillingInfo,FcProviderEearningInfo
-from billing.serializers import FcBillingInfoSerializer,FcEarningInfoSerializer,FcInitiateCustomerPaymentInfoSerializer
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from billing.models import FcBillingInfo,FcProviderEearningInfo,FcCustomerCardsDetails
+from billing import serializers
+from rest_framework.generics import CreateAPIView, RetrieveAPIView,ListAPIView
 from customers.models import FcServiceRequest
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,10 +12,30 @@ from accounts.serializers import FcUserDetailsSerializer
 from uuid import uuid4
 from django.http import JsonResponse
 from rest_framework.validators import ValidationError
+from core.permissions import IsProvider
+from rest_framework import filters
+from core import pagination
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class FcCustomerCardsDetailsView(ListAPIView):
+    serializer_class = serializers.FcCustomerCardsDetailsSerializer
+    permission_classes = (IsProvider,)
+    pagination_class = pagination.CustomPageNumberPagination
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('bank',)
+    ordering = ('created_at',)  # Default ordering
+
+    def get_queryset(self):
+        user = self.request.user
+        cards = FcCustomerCardsDetails.objects.filter(user=user)
+        return cards
 
 
 class NewBillingView(APIView):
-    serializer_class = FcBillingInfoSerializer
+    serializer_class = serializers.FcBillingInfoSerializer
     # permission_classes = (permissions.IsAuthenticated, )
 
     def get_object(self, service_request_id):
@@ -43,6 +63,15 @@ class NewBillingView(APIView):
             "email": customer_info['email'],
             "amount": service_request.total_amount
         }
+        auth_code = self.request.GET.get("authorization_code")
+
+        # check if the customer card details exists with the auth_code
+        if FcCustomerCardsDetails.objects.filter(authorization_code=auth_code,user=self.request.user).exists():
+            context.update({'authorization_code':auth_code})
+            res = paystack_instance.recurrent_charge(context)
+            return JsonResponse({"data": res})
+
+        # if not charge as a new customer
         data = paystack_instance.charge_customer(context)
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
@@ -54,31 +83,34 @@ def all_banks_list(request):
     response = paystack_instance.get_bank_list_api()
     return JsonResponse({"banks":response})
 
+
 def verify_payment(request, billing_reference):
     refrence_code = billing_reference
     PaystackAPI = load_lib()
     paystack_instance = PaystackAPI()
     response = paystack_instance.verify_payment(refrence_code)
-
     # check if payment has been made,
-    if response[0]:
+    if response[2]['status'] == 'success':
+        payment_info_from_paystack = response[2]['authorization']
+
         billing_info = get_object_or_404(FcBillingInfo,billing_reference=billing_reference)
         billing_info.status = billing_info.Billing_Status.PAID
         billing_info.save()
+        FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack,billing_info=billing_info,user=request.user)
 
         context = {
-            'status':'Successful',
-            'message': response[1]
+            'status':200,
+            'message': "Payment has been made successfully"
         }
         return JsonResponse(context)
     return JsonResponse({
-        "status": "erorr",
-        "message": response[1]
+        "status": response[0],
+        "message": response[2]
     })
 
 
 class FcEarningRequestView(CreateAPIView):
-    serializer_class = FcInitiateCustomerPaymentInfoSerializer
+    serializer_class = serializers.FcInitiateCustomerPaymentInfoSerializer
     queryset = FcProviderEearningInfo.objects.all()
 
     def post(self, request):
@@ -93,7 +125,7 @@ class FcEarningRequestView(CreateAPIView):
 
 
 class FcEarningInfo(RetrieveAPIView):
-    serializer_class = FcEarningInfoSerializer
+    serializer_class = serializers.FcEarningInfoSerializer
 
     def get_object(self):
         query = self.kwargs.get('service_request_id')

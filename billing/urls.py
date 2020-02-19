@@ -13,9 +13,9 @@ from billing.api import billing_api
 app_name = "billing"
 
 urlpatterns = [
-    # path("new-customer", billing_api.new_customer, name='new_customer'),
+    path('new-billing', billing_api.NewBillingView.as_view(), name='new_billing'),
     path("verify_payment/<billing_reference>", billing_api.verify_payment, name='verify_payment'),
-    path('new-billing',billing_api.NewBillingView.as_view(),name='new_billing'),
+    path('my_cards', billing_api.FcCustomerCardsDetailsView.as_view(), name='provider-cards'),
     path('supported-bank-list', billing_api.all_banks_list, name='bank-list'),
     path('claim-earning', billing_api.FcEarningRequestView.as_view(), name='claim-earning'),
     path('earning_info/<service_request_id>', billing_api.FcEarningInfo.as_view(), name='earning-info'),
