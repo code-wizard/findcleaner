@@ -66,12 +66,14 @@ class NewBillingView(APIView):
         auth_code = self.request.GET.get("authorization_code")
 
         # check if the customer card details exists with the auth_code
-        if FcCustomerCardsDetails.objects.filter(authorization_code=auth_code,user=self.request.user).exists():
-            context.update({'authorization_code':auth_code})
-            res = paystack_instance.recurrent_charge(context)
-            return JsonResponse({"data": res})
+        if auth_code:
+            if FcCustomerCardsDetails.objects.filter(authorization_code=auth_code,user=self.request.user).exists():
+                context.update({'authorization_code':auth_code})
+                res = paystack_instance.recurrent_charge(context)
+                return JsonResponse({"data": res}) # payment is being made here
 
         # if not charge as a new customer
+        # this will return authorization url where payment can be made
         data = paystack_instance.charge_customer(context)
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
