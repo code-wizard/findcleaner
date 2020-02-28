@@ -22,7 +22,7 @@ User = get_user_model()
 
 class FcCustomerCardsDetailsView(ListAPIView):
     serializer_class = serializers.FcCustomerCardsDetailsSerializer
-    permission_classes = (IsProvider,)
+    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('bank',)
@@ -36,7 +36,7 @@ class FcCustomerCardsDetailsView(ListAPIView):
 
 class NewBillingView(APIView):
     serializer_class = serializers.FcBillingInfoSerializer
-    # permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get_object(self, service_request_id):
         service_request = get_object_or_404(FcServiceRequest,id=service_request_id)
@@ -86,29 +86,63 @@ def all_banks_list(request):
     return JsonResponse({"banks":response})
 
 
-def verify_payment(request, billing_reference):
-    refrence_code = billing_reference
-    PaystackAPI = load_lib()
-    paystack_instance = PaystackAPI()
-    response = paystack_instance.verify_payment(refrence_code)
-    # check if payment has been made,
-    if response[2]['status'] == 'success':
-        payment_info_from_paystack = response[2]['authorization']
+class FcAPIVerifyPayment(APIView):
+    permission_classes = (permissions.IsAuthenticated, )
 
-        billing_info = get_object_or_404(FcBillingInfo,billing_reference=billing_reference)
-        billing_info.status = billing_info.Billing_Status.PAID
-        billing_info.save()
-        FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack,billing_info=billing_info,user=request.user)
+    def get(self, request, **kwargs):
+        refrence_code = kwargs.get("billing_reference")
+        PaystackAPI = load_lib()
+        paystack_instance = PaystackAPI()
+        response = paystack_instance.verify_payment(refrence_code)
+        print(response, "Response")
+        # check if payment has been made,
+        if response[2]['status'] == 'success':
+            payment_info_from_paystack = response[2]['authorization']
 
-        context = {
-            'status':200,
-            'message': "Payment has been made successfully"
-        }
-        return JsonResponse(context)
-    return JsonResponse({
-        "status": response[0],
-        "message": response[2]
-    })
+            billing_info = get_object_or_404(FcBillingInfo, billing_reference=refrence_code)
+            billing_info.status = billing_info.Billing_Status.PAID
+            billing_info.save()
+            billing_info.service_request.status = FcServiceRequest.FcRequestStatus.PAID
+            billing_info.service_request.save()
+            FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack, billing_info=billing_info,
+                                                         user=request.user)
+
+            context = {
+                'status': 200,
+                'message': "Payment has been made successfully"
+            }
+            return JsonResponse(context)
+        return JsonResponse({
+            "status": response[0],
+            "message": response[2]
+        })
+
+# def verify_payment(request, billing_reference):
+#     refrence_code = billing_reference
+#     PaystackAPI = load_lib()
+#     paystack_instance = PaystackAPI()
+#     response = paystack_instance.verify_payment(refrence_code)
+#     print(response, "Response")
+#     # check if payment has been made,
+#     if response[2]['status'] == 'success':
+#         payment_info_from_paystack = response[2]['authorization']
+#
+#         billing_info = get_object_or_404(FcBillingInfo, billing_reference=billing_reference)
+#         billing_info.status = billing_info.Billing_Status.PAID
+#         billing_info.save()
+#         billing_info.service_request.status = FcServiceRequest.FcRequestStatus.PAID
+#         billing_info.service_request.save()
+#         FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack,billing_info=billing_info, user=request.user)
+#
+#         context = {
+#             'status':200,
+#             'message': "Payment has been made successfully"
+#         }
+#         return JsonResponse(context)
+#     return JsonResponse({
+#         "status": response[0],
+#         "message": response[2]
+#     })
 
 
 class FcEarningRequestView(CreateAPIView):

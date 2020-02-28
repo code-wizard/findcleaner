@@ -114,7 +114,9 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
         return obj.get_provider_distance(lat, lng)
 
     def get_rating(self, obj):
-        return obj.get_my_ratings()
+        rating = FcRating.objects.filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
+        return rating.get("rating_score__avg")
+        # return obj.get_my_ratings()
 
     def get_name(self,obj):
         return obj.get_name()

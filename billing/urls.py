@@ -14,7 +14,7 @@ app_name = "billing"
 
 urlpatterns = [
     path('new-billing', billing_api.NewBillingView.as_view(), name='new_billing'),
-    path("verify_payment/<billing_reference>", billing_api.verify_payment, name='verify_payment'),
+    path("verify_payment/<billing_reference>", billing_api.FcAPIVerifyPayment.as_view(), name='verify_payment'),
     path('my_cards', billing_api.FcCustomerCardsDetailsView.as_view(), name='provider-cards'),
     path('supported-bank-list', billing_api.all_banks_list, name='bank-list'),
     path('claim-earning', billing_api.FcEarningRequestView.as_view(), name='claim-earning'),

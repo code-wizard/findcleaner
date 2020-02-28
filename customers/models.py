@@ -6,7 +6,8 @@ from services.models import FcService
 from providers.models import FcProviderServices
 from django.db.models import Sum
 
-status = (("new", "New"),("accepted", "Accepted"), ("ongoing", "Ongoing"),("cancel", "Cancelled"), ("completed", "Completed"))
+status = (("new", "New"),("accepted", "Accepted"), ("ongoing", "Ongoing"),("cancel", "Cancelled"),
+          ("completed", "Completed"), ("paid", "Paid"))
 payment_mode = (("cash", "Cash"), ("card", "Card"), ("bank_transfer", "Bank Transfer"))
 
 
@@ -33,6 +34,7 @@ class FcServiceRequest(models.Model):
         ONGOING = status[2][0]
         CANCELLED = status[3][0]
         COMPLETED = status[4][0]
+        PAID = status[5][0]
 
     service = models.ForeignKey(FcService, on_delete=models.CASCADE, related_name='service_requests', null=True)
     service_provider = models.ForeignKey(FcProviderServices, on_delete=models.SET_NULL,
@@ -48,6 +50,13 @@ class FcServiceRequest(models.Model):
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)
     payment_mode = models.CharField(_('Payment Mode'),choices=payment_mode, default='cash',max_length=500, null=True, blank=True)
     service_deliver_on = models.DateField(_('Service Delivered on'),max_length=500, null=True, blank=True)
+    no_of_pets = models.PositiveIntegerField(default=0, null=True)
+    no_of_toilets = models.PositiveIntegerField(default=0, null=True)
+    no_of_spaces = models.PositiveIntegerField(default=0, null=True)
+    no_of_rooms = models.PositiveIntegerField(default=0, null=True)
+    no_of_cleaners = models.PositiveIntegerField(default=0, null=True)
+    cleaning_products = models.CharField(null=True, max_length=3)
+    cleaning_equipment = models.CharField(null=True, max_length=3)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
