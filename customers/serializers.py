@@ -50,6 +50,13 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         # exclude = ('user','address')
         read_only_fields = ['customer',]
 
+    # def update(self, instance, validated_data):
+    #     print('validated_data',validated_data)
+    #     print('instance',instance)
+    #     if validated_data.get('status') == FcServiceRequest.FcRequestStatus.COMPLETED:
+    #         print('completed service')
+    #     return instance
+
 
 class FcCustomerSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
