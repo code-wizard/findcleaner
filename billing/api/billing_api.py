@@ -22,7 +22,7 @@ User = get_user_model()
 
 class FcCustomerCardsDetailsView(ListAPIView):
     serializer_class = serializers.FcCustomerCardsDetailsSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('bank',)
@@ -32,6 +32,18 @@ class FcCustomerCardsDetailsView(ListAPIView):
         user = self.request.user
         cards = FcCustomerCardsDetails.objects.filter(user=user)
         return cards
+
+
+def set_card_default(request,auth_code):
+    card_obj = get_object_or_404(FcCustomerCardsDetails, authorization_code=auth_code, user=request.user)
+    card_obj.set_default()
+    return JsonResponse({"response":"default card successfully changed"})
+
+
+def remove_card(request,auth_code):
+    card_obj = get_object_or_404(FcCustomerCardsDetails, authorization_code=auth_code, user=request.user)
+    card_obj.remove_card()
+    return JsonResponse({"response":"default card successfully removed"})
 
 
 class NewBillingView(APIView):
@@ -67,8 +79,11 @@ class NewBillingView(APIView):
 
         # check if the customer card details exists with the auth_code
         if auth_code:
-            if FcCustomerCardsDetails.objects.filter(authorization_code=auth_code,user=self.request.user).exists():
+            card_obj = FcCustomerCardsDetails.objects.filter(authorization_code=auth_code,user=self.request.user)
+            if card_obj.exists():
                 context.update({'authorization_code':auth_code})
+                card_obj.first().set_default() # set this card to default card
+
                 res = paystack_instance.recurrent_charge(context)
                 return JsonResponse({"data": res}) # payment is being made here
 
