@@ -11,6 +11,8 @@ from rest_framework.views import APIView
 
 from accounts.models import FcUser
 from accounts.serializers import FcUserSerializer
+from accounts.utils import format_number
+from core.twilio import TwilioSMS
 from dashboard.serializers import UsersViewSerializer
 
 User = get_user_model()
@@ -50,3 +52,31 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         user = get_object_or_404(FcUser, pk=self.kwargs.get("id"))
         return user
+
+
+class FcValidatePhone(APIView):
+    # serializer_class = serializers.FcPhoneSerializer
+
+    def get(self, request, **kwargs):
+        phone = format_number(kwargs.get("phone"))
+        if User.objects.filter(phone_number=phone).exists():
+            return Response("Account already exists", status=status.HTTP_400_BAD_REQUEST)
+
+        TwilioSMS().send_otp(to=phone)
+        return Response("success", status=status.HTTP_200_OK)
+
+
+class FcVerfiyOTP(APIView):
+    # serializer_class = serializers.FcVerifyOtpSerializer
+
+    def post(self, request):
+        phone = format_number(request.data.get("phone"))
+        _, message = TwilioSMS().check_verification(phone, request.data.get("code"))
+        if not _:
+            return Response("Invalid OTP", status=status.HTTP_400_BAD_REQUEST)
+        return Response(message)
+
+
+
+
+

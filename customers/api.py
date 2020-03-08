@@ -3,7 +3,7 @@ from rest_auth.views import LoginView
 from rest_framework import permissions, viewsets,generics,filters,status,views
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from customers.models import status
+from customers.models import status, FcHelp
 
 from .serializers import FcServiceRequestSerializer, FcCustomerSignUpSerializer, FcCreateServiceRequestSerializer
 from providers.models import FcProviderServices
@@ -138,3 +138,10 @@ class FcCustomerServiceHistoryViews(generics.ListAPIView):
         # history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
         history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first())
         return history_tasks
+
+
+class FcHelpAPIView(APIView):
+
+    def get(self, request):
+        help = FcHelp.objects.filter()[0]
+        return Response(dict(phone=help.phone, email=help.email))

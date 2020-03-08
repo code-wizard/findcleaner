@@ -216,3 +216,18 @@ class FcUserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ('is_staff','is_superuser','is_active','email','username','avatar_url')
         fields = ('id', 'username',"first_name","last_name","phone_number",
                   'email', 'is_active','user_type', "date_joined","is_staff", 'avatar_url')
+
+
+class FcPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField()
+
+    def save(self, **kwargs):
+        return
+
+
+class FcVerifyOtpSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=6)
+    phone = serializers.CharField()
+
+    def save(self, **kwargs):
+        return

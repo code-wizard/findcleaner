@@ -44,13 +44,22 @@ class FcProviderServices(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return   "{}-{}".format(self.provider.name, self.service.get_category_name())
+        try:
+            return   "{}-{}".format(self.provider.name, self.service.get_category_name() )
+        except:
+            return "{}-{}".format(self.provider.name)
 
     def get_service_name(self):
-        return self.service.service
+        try:
+            return self.service.service
+        except:
+            return None
 
     def get_service_avatar(self):
-        return self.service.avatar
+        try:
+            return self.service.avatar
+        except:
+            return None
 
     def get_my_ratings(self):
         service_request = self.provider_service_request.first()

@@ -15,5 +15,7 @@ urlpatterns = [
     path("accounts/resend-confirm-email/", api.FcResendActivationEmailAPIView.as_view(), name="resend_account_confirm"),
     path('accounts/', include('allauth.urls')),
     path('signup/', api.FcRegisterView.as_view()),
-    path('update-user/<id>/', api.UserUpdateDeleteView.as_view())
+    path('update-user/<id>/', api.UserUpdateDeleteView.as_view()),
+    path('phone-verify/<phone>/', api.FcValidatePhone.as_view()),
+    path('verify-otp/', api.FcVerfiyOTP.as_view())
 ]
