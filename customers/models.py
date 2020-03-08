@@ -67,6 +67,7 @@ class FcServiceRequest(models.Model):
     def get_service_name(self):
         return self.service.service
 
+
     class Meta:
         db_table = "fc_service_request"
         verbose_name = _("Service Request")

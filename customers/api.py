@@ -15,6 +15,10 @@ from django.shortcuts import get_object_or_404
 from customers.models import FcServiceRequest
 from core.permissions import IsCustomer,IsProvider,IsStaff
 from accounts.serializers import FcLoginSerializer
+from billing.utils import load_lib
+from uuid import uuid4
+from billing.models import FcCustomerCardsDetails,DefaultCardBillingInfo,FcBillingInfo
+from django.http import JsonResponse
 
 User = get_user_model()
 
@@ -105,6 +109,40 @@ class UpdateRequestView(generics.RetrieveUpdateAPIView):
         query = self.kwargs.get('request_id')
         request_obj = get_object_or_404(FcServiceRequest,id=query)
         return request_obj
+
+    def patch(self, request,*args, **kwargs):
+        serializer = self.serializer_class(self.get_object(),data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        service_request = self.get_object()
+        # check for service request status
+        if request.data.get('status') == FcServiceRequest.FcRequestStatus.COMPLETED:
+            customer_info = service_request.customer.user
+            PaystackAPI = load_lib()
+            paystack_instance = PaystackAPI()
+
+            context = {
+                "reference": str(uuid4()),
+                "email": customer_info.email,
+                "amount": service_request.total_amount
+            }
+            customer_cardss = FcCustomerCardsDetails.objects.filter(user=self.request.user,is_deleted=False).values('id').distinct()
+            # fetch default card detail
+            auth_code = DefaultCardBillingInfo.objects.get(record_id__in=customer_cardss, model_name='FcCustomerCardsDetails').id
+
+            # check if the customer card details exists with the auth_code
+            if auth_code:
+                context.update({'authorization_code': auth_code})
+                res = paystack_instance.recurrent_charge(context)
+                return JsonResponse({"data": res})  # payment is being made here
+
+            # if not charge as a new customer
+            # this will return authorization url where payment can be made
+            data = paystack_instance.charge_customer(context)
+            FcBillingInfo.objects.get_or_create(service_request=service_request,billing_reference=context['reference'])
+            return JsonResponse({"data": data})
+        return Response(serializer.data)
 
 
 class FcCancelServiceRequestView(APIView):

@@ -9,6 +9,17 @@ status = (("pending", "Pending"),("paid", "Paid"), ("cancelled", "Cancelled"))
 EarningStatus = (("pending", "Pending"),("initiated", "Initiated"),("recieved", "Recieved"))
 
 
+class DefaultCardBillingInfo(models.Model):
+    """
+        Keep track of model to limit oine record of it as is_default = True
+    """
+    model_name = models.CharField(max_length=64, unique=True)
+    record_id = models.IntegerField() # id of the record for isdefault
+
+    def __unicode__(self):
+        return u'Model %s record %d for %s' % (self.model_name, self.record_id)
+
+
 class FcBillingInfo(models.Model):
     class Billing_Status:
         PAID = status[1][0]
@@ -41,11 +52,40 @@ class FcCustomerCardsDetails(models.Model):
     card_type = models.CharField(max_length=255, null=True)
     bank = models.CharField(max_length=255, null=True)
     reusable = models.BooleanField(default=True)
-    default = models.BooleanField(default=True)
+    default = None #models.BooleanField(default=False)
     status = models.CharField(max_length=125, default='active')
+    is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     billing_info = models.OneToOneField(FcBillingInfo, on_delete=models.CASCADE, related_name="billing_card_detail", null=True)
+
+    def is_default(self):
+        if self.default == None:
+            try:
+                default = DefaultCardBillingInfo.objects.get(model_name=self.__name__)
+            except DefaultCardBillingInfo.DoesNotExist:
+                default = None
+        return self.id == default.record_id
+
+    def remove_card(self):
+        self.is_deleted = True
+        if DefaultCardBillingInfo.objects.filter(model_name=self.__class__.__name__).exists():
+            default = DefaultCardBillingInfo.objects.get(model_name=self.__class__.__name__)
+            default.delete()
+        self.save()
+        return
+
+    def set_default(self):
+        try:
+            default_rec = DefaultCardBillingInfo.objects.get(model_name=self.__class__.__name__)
+        except DefaultCardBillingInfo.DoesNotExist:
+            DefaultCardBillingInfo.objects.create(model_name=self.__class__.__name__, record_id=self.id)
+        else:
+            if default_rec.record_id != self.id:
+                default_rec.record_id = self.id
+                default_rec.save()
+        # self.default_no = self
+        return
 
 
 class FcProviderEearningInfo(models.Model):
