@@ -1,3 +1,3 @@
 
 def format_number(phone):
-    return "+1{}".format(phone[1:])
+    return "+234{}".format(phone[1:])
