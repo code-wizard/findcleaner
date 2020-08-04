@@ -224,7 +224,7 @@ class FcProviderEarnings(ListAPIView):
 
 class FcProviderServiceList(ListAPIView):
     serializer_class = serializers.FcProviderServicesSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def get_queryset(self):
         user = self.request.user

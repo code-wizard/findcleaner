@@ -15,11 +15,11 @@ class FcProvider(models.Model):
         ACTIVE = PROVIDER_STATUS[0][0]
         DISABLED = PROVIDER_STATUS[1][0]
 
-    name = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
+    state = models.CharField(max_length=255, null=True, blank=True)
     user = models.OneToOneField(FcUser, on_delete=models.SET_NULL, related_name="provider_info", null=True)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, null=True, blank=True)
     coords = ArrayField(models.FloatField(null=True), size=2, null=True)
     type = models.CharField(choices=PROVIDER_TYPES, default='individual', max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)

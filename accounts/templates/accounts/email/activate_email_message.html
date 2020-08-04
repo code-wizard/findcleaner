@@ -1,19 +1,40 @@
-Hi {{ user.get_full_name }},<br/><br/>
 
-Your account has been created with the following credentials:<br><br>
-email: {{ user.email }}<br>
-{% if user_password %}
-    password: {{ user_password }} <br><br>
-{% else %}
-    password: "as provided while signing up" <br><br>
-{% endif %}
+<!DOCTYPE html>
+<html lang="en-US">
+	<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-Click the activation link below or copy and paste it in your browser to activate your account:<br>
-activation link: <a href="{{ activate_url }}">{{ activate_url }}</a><br><br>
+		<title>FindCleaner Sign Up</title>
+	</head>
+		<body style="margin:0px; font-family:Tahoma, Geneva, sans-serif;">
 
-{% if user_password %}
-    You are advice to change your password once you login<br><br>
-{% endif %}
+			<div style="padding:10px; background:#D3D3D3; font-size:30px; color:#00008B">
+                            <a href="https://findcleaners.com.ng"><img src="https://findcleaner.ng/favicon.png" width="35" height="35" alt="Ntradex.com" style="border:none; float:left;"></a>
+                            FindCleaner Sign Up
+                        </div>
 
-Thanks
+			<div style="padding:24px; font-size:13px;">
+                <span style="font-weight:bold">Hi {{ user.get_full_name }}</span>,<br/><br/>
+                Thanks for signing up with FindCleaner, We connect you to efficient and hardworking providers that will carry out cleaning services in a timely fashion. <br/><br/>
+                Your account has been created with the following credentials:<br><br>
+            email: {{ user.email }}<br>
+            {% if user_password %}
+                password: {{ user_password }} <br><br>
+            {% else %}
+                password: "as provided while signing up" <br><br>
+            {% endif %}
 
+            Click the activation link below or copy and paste it in your browser to activate your account:<br>
+            activation link: <a href="{{ activate_url }}">{{ activate_url }}</a><br><br>
+
+            {% if user_password %}
+                You are advice to change your password once you login<br><br>
+            {% endif %}
+                Feel free to schedule your first appointment right away!
+			</div>
+
+			<p>
+				<span style="font-weight:lighter; font-size: 10px;">FindCleaner Team.</span><br />
+				<span style="font-weight:lighter; font-size: 10px;">https://findcleaners.com.ng</span><br />
+			</p>
+	</body>
+</html>

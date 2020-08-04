@@ -41,7 +41,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
         with transaction.atomic():
             validated_data["is_active"] = False
             validated_data["account_type"] = FcUser.FcAccountType.PROVIDER
-            services_info = validated_data.get('services_info')
+            services_info = validated_data.get('services_info',None)
             user = super(FcProviderSignUpSerializer, self).create(validated_data)
             coords = validated_data.get("coords")
             provider_info = FcProvider.objects.create(user=user,
@@ -54,8 +54,6 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
 
 
             provider_info.save()
-            print('Save info')
-
             # create provider services
             if services_info:
                 FcProviderServices.objects.bulk_create(

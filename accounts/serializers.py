@@ -134,7 +134,7 @@ class FcRegisterSerializer(serializers.ModelSerializer):
     # username = serializers.CharField(max_length=255, write_only=False)
     first_name = serializers.CharField(max_length=255, write_only=False)
     last_name = serializers.CharField(max_length=255, write_only=False)
-    phone_number = serializers.CharField(max_length=255, write_only=False)
+    phone_number = serializers.CharField(allow_blank=True, allow_null=True, max_length=255, write_only=False)
 
     def validate_email(self, email):
         if FcUser.objects.filter(email=email).exists():
