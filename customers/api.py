@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_auth.views import LoginView
-from rest_framework import permissions, viewsets,generics,filters,status,views
+from rest_framework import permissions,generics,filters,status,views
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from customers.models import status, FcHelp
+from customers.models import FcHelp
 
 from .serializers import FcServiceRequestSerializer, FcCustomerSignUpSerializer, FcCreateServiceRequestSerializer
 from providers.models import FcProviderServices
