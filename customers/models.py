@@ -26,6 +26,9 @@ class FcCustomer(models.Model):
         lastname = self.user.last_name
         return "{} {}".format(firsname, lastname)
 
+    def get_phone(self):
+        return self.user.phone_number
+
 
 class FcServiceRequest(models.Model):
     class FcRequestStatus:
