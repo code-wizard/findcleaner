@@ -31,11 +31,13 @@ class FcCustomerSignUpSerializer(FcRegisterSerializer):
 #
 #
 
+
 class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
-        print('about to create')
-        customer = self.context.get('customer')
+        user = self.context.get('user')
+        customer = get_object_or_404(FcCustomer, user=user)
+
         # provider_service = get_object_or_404(FcProviderServices  , id=validated_data.get('service_provider'))
         provider_service = validated_data.get('service_provider')
         provider = provider_service.provider
@@ -55,6 +57,7 @@ class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcServiceRequest
         fields = '__all__'
+        read_only_fields = ['start_time','end_time','duration','status','customer','total_amount',]
 
 
 class FcServiceRequestSerializer(serializers.ModelSerializer):

@@ -60,21 +60,8 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user
         customer = get_object_or_404(FcCustomer, user=user)
-        
+
         return serializer.save(customer=customer)
-
-        # provider_service = get_object_or_404(FcProviderServices  , id=request_info.get('service_provider'))
-        # provider = provider_service.provider
-        # # send mail here
-        # address = request_info.get('address')
-        # client_name = customer.get_name()
-        # phone = customer.get_phone()
-        # provider_name = provider.name
-        # provider_email = provider.user.email
-
-        # ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
-        # provider_mail = 'mhoal0vl0l@privacy-mail.top'
-        # send_email_('New Request','providers/new_request',provider_mail, ctx)
 
     def get_queryset(self):
         user = self.request.user
@@ -84,10 +71,10 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        customer = get_object_or_404(FcCustomer, user=self.request.user)
+        # customer = get_object_or_404(FcCustomer, user=self.request.user)
 
         context.update({
-            'customer':customer
+            'user':self.request.user
         })
         return context
 
