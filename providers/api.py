@@ -136,6 +136,9 @@ class FcProviderSummaryDashboard(APIView):
 
 
 class FcServiceRequestDetail(RetrieveAPIView):
+    """
+    View provider service request by poassing request "id" as query_param 
+    """
     serializer_class = serializers.FcServiceRequestSerializer
     # permission_classes = (IsProvider,)
 
@@ -144,8 +147,11 @@ class FcServiceRequestDetail(RetrieveAPIView):
 
 
 class FcUpdateServiceRequest(UpdateAPIView):
+    """
+    Update provider service request by poassing request "id" as query_param 
+    """
     serializer_class = serializers.FcServiceRequestSerializer
-    permission_classes = (IsProvider, )
+    # permission_classes = (IsProvider, )
 
     def get_object(self):
         return get_object_or_404(FcServiceRequest, pk=self.kwargs.get("id"))
@@ -160,7 +166,7 @@ class FcMyServiceRequest(ListAPIView):
     View all logged in provider request.
     """
     serializer_class = serializers.FcServiceRequestSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
 
     def get_queryset(self):
         user = self.request.user
@@ -195,8 +201,11 @@ class FcRequestByStatus(ListAPIView):
 
 
 class FcProviderEarnings(ListAPIView):
+    """
+    View logged in provider earnings
+    """
     serializer_class = serializers.FcServiceRequestEarningsSerializer
-    permission_classes = (IsProvider,)
+    # permission_classes = (IsProvider,)
     pagination_class = pagination.CustomPageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('service__service',)
@@ -223,6 +232,10 @@ class FcProviderEarnings(ListAPIView):
 
 
 class FcProviderServiceList(ListAPIView):
+
+    """
+    View list of all services of a logged in provider
+    """
     serializer_class = serializers.FcProviderServicesSerializer
     # permission_classes = (IsProvider,)
 
@@ -234,6 +247,9 @@ class FcProviderServiceList(ListAPIView):
 
 
 class FcUpdateProviderServiceView(RetrieveUpdateDestroyAPIView):
+    """
+    Update, View or Delete logged in provider service
+    """
     serializer_class = serializers.FcProviderServicesSerializer
     # permission_classes = (IsProvider,)
 
