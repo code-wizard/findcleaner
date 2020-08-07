@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from core.utils import calculate_provider_distance
 
-PROVIDER_TYPES = (('individual', 'Individual'), ('Agency', 'Agency'))
+PROVIDER_TYPES = (('individual', 'Individual'), ('agency', 'Agency'))
 PROVIDER_STATUS = (('active', 'Active'), ('disabled', 'disabled'))
 FcUser = get_user_model()
 
@@ -27,7 +27,9 @@ class FcProvider(models.Model):
     status = models.CharField(choices=PROVIDER_STATUS, max_length=8, default='disabled')
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        return f"{self.user.first_name} {self.user.last_name}"
 
     class Meta:
         db_table = "fc_provider"
@@ -51,7 +53,7 @@ class FcProviderServices(models.Model):
 
     def get_service_name(self):
         try:
-            return self.service.service
+            return self.service.service 
         except:
             return None
 
