@@ -95,7 +95,7 @@ ROOT_URLCONF = 'findcleaner.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -198,13 +198,14 @@ REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'accounts.serializers.FcLoginSerializer',
     # 'JWT_SERIALIZER': 'authentication.serializers.JWTSerializer',
 }
-# REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' }
+REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema' }
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
-'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+# 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 # All auth configuration
@@ -224,10 +225,11 @@ ACCOUNT_ADAPTER = "accounts.adapter.AccountAdapter"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = ['http://dev.findcleaner.ng','http://localhost:4200','http://findcleaner.netlify.com']
+CORS_ORIGIN_WHITELIST = ['http://dev.findcleaner.ng','http://localhost:4200','http://localhost:8100','http://findcleaner.netlify.com']
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',
