@@ -47,7 +47,7 @@ class FcCustomerRegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
+ 
 
 class NewServiceRequestSchedule(generics.ListCreateAPIView):
     """
@@ -55,9 +55,9 @@ class NewServiceRequestSchedule(generics.ListCreateAPIView):
     search providers/ endpoint
     """
     serializer_class = FcCreateServiceRequestSerializer
-    # permission_classes = (IsCustomer,)
+    permission_classes = (IsCustomer,)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer): 
         user = self.request.user
         customer = get_object_or_404(FcCustomer, user=user)
 

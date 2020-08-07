@@ -9,13 +9,15 @@ class TwilioSMS(object):
     def send_otp(self, to, channel="sms"):
         if channel not in ("sms", "voice"):
             channel = "sms"
-
-        verification = client.verify \
-            .services(settings.VERIFICATION_SID) \
-            .verifications \
-            .create(to=to, channel=channel)
-
-        return verification.sid
+        try:
+            verification = client.verify \
+                .services(settings.VERIFICATION_SID) \
+                .verifications \
+                .create(to=to, channel=channel)
+                
+            return verification.sid
+        except:
+            return None
 
     def check_verification(self, phone, code):
         service = settings.VERIFICATION_SID

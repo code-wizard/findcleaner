@@ -52,7 +52,7 @@ class UserUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         user = get_object_or_404(FcUser, pk=self.kwargs.get("id"))
         return user
-
+ 
 
 class FcValidatePhone(APIView):
     # serializer_class = serializers.FcPhoneSerializer
@@ -62,7 +62,9 @@ class FcValidatePhone(APIView):
         if User.objects.filter(phone_number=phone).exists():
             return Response("Account already exists", status=status.HTTP_400_BAD_REQUEST)
 
-        TwilioSMS().send_otp(to=phone)
+        twilio_response = TwilioSMS().send_otp(to=phone)
+        if not twilio_response:
+            return Response({"status":"error", "message":"an error occured. Try after some time"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response("success", status=status.HTTP_200_OK)
 
 
