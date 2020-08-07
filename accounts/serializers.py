@@ -16,6 +16,7 @@ from providers.models import FcProvider
 from django.utils.translation import ugettext_lazy as _
 from allauth.account.utils import send_email_confirmation
 from allauth.account.utils import user_pk_to_url_str
+from accounts.utils import format_number
 
 UserModel = get_user_model()
 
@@ -69,7 +70,7 @@ class FcLoginSerializer(serializers.Serializer):
 
         # Did we get back an active user?
         if user:
-
+ 
             if not user.is_active:
                 msg = _('User account is disabled.')
                 raise serializers.ValidationError(msg)
@@ -152,10 +153,12 @@ class FcRegisterSerializer(serializers.ModelSerializer):
             last_name = validated_data.get("last_name","")
             account_type = validated_data.get("account_type","")
             is_staff = validated_data.get("is_staff",False)
+            phone = format_number(validated_data.get("phone_number",""))
+
             user = FcUser.objects.create(
                 username=validated_data.get("email"),
                 email=validated_data.get("email"),
-                phone_number=validated_data.get("phone_number",""),
+                phone_number=phone,
                 first_name = first_name,
                 is_active = validated_data.get("is_active", True),
                 last_name = last_name,
