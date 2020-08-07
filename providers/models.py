@@ -57,11 +57,6 @@ class FcProviderServices(models.Model):
         except:
             return None
 
-    def get_service_avatar(self):
-        try:
-            return self.service.avatar
-        except:
-            return None
 
     def get_my_ratings(self):
         service_request = self.provider_service_request.first()

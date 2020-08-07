@@ -28,7 +28,7 @@ class FcProviderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FcProvider
-        # fields = '__all__'
+        # fields = '__all__' 
         exclude = ('created_at','updated_at')
 
 
@@ -53,7 +53,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
                                                       coords=coords)
 
 
-            provider_info.save()
+            provider_info.save() 
             # create provider services
             if services_info:
                 FcProviderServices.objects.bulk_create(
@@ -95,10 +95,17 @@ class FcMyServicesSerializer(serializers.ModelSerializer):
 
 class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
+    avatar_url = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
+
+    def get_avatar_url(self, obj):
+        try:
+            return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
+        except Exception as e:
+            return None
 
     def get_address(self, obj):
         return obj.provider.address
