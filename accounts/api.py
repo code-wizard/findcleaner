@@ -13,7 +13,6 @@ from accounts.models import FcUser
 from accounts.serializers import FcUserSerializer
 from accounts.utils import format_number
 from core.twilio import TwilioSMS
-from dashboard.serializers import UsersViewSerializer
 
 User = get_user_model()
 
