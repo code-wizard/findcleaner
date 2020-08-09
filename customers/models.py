@@ -67,7 +67,10 @@ class FcServiceRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "'{}' requested for {} service from '{}'".format(self.customer.get_name(),self.service.service, self.service_provider.provider.name)
+        try:
+            return "'{}' requested for {} service from '{}'".format(self.customer.get_name(),self.service.service, self.service_provider.provider.name)
+        except:
+            return "{}".format(self.customer.get_name())
         # return "{}-{}".format(self.service.service, self.service_provider.provider.name)
 
     def get_service_name(self):
