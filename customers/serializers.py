@@ -50,7 +50,7 @@ class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
 
         ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
         provider_mail = 'mhoal0vl0l@privacy-mail.top'
-        send_email_('New Request','providers/new_request',provider_mail, ctx)
+        send_email_('New Request','providers/new_request',provider_email, ctx)
 
         return validated_data
 

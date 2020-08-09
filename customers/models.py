@@ -17,6 +17,9 @@ class FcCustomer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.user.get_full_name()
+
     class Meta:
         db_table = "fc_customer"
         verbose_name = _("Customer")
