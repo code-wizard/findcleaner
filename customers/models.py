@@ -48,6 +48,9 @@ class FcServiceRequest(models.Model):
     requirement_description = models.TextField(_('Service Requirement'), max_length=500, null=True, blank=True)
     service_required_on = models.DateTimeField(_('Service requested On'), null=True, blank=True, max_length=20)
     # expected_start_time = models.TimeField(_('Expected Start Time'), null=True, blank=True)
+    start_time = models.CharField(_('Start time'),max_length=500, null=True, blank=True)
+    end_time = models.CharField(_('End time'),max_length=500, null=True, blank=True)
+    duration = models.CharField(_('duration'),max_length=500, null=True, blank=True)
     expected_hours_to_complete = models.CharField(_('Expected Complete hours'),max_length=500, null=True, blank=True)
     total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)
@@ -64,7 +67,7 @@ class FcServiceRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{}-{}".format(self.service.service, self.service_provider.provider.name)
+        return "'{}' requested for {} service from '{}'".format(self.customer.get_name(),self.service.service, self.service_provider.provider.name)
         # return "{}-{}".format(self.service.service, self.service_provider.provider.name)
 
     def get_service_name(self):
