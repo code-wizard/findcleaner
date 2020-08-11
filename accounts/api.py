@@ -13,6 +13,7 @@ from accounts.models import FcUser
 from accounts.serializers import FcUserSerializer
 from accounts.utils import format_number
 from core.twilio import TwilioSMS
+from dashboard.serializers import UsersViewSerializer
 
 User = get_user_model()
 
@@ -59,7 +60,7 @@ class FcValidatePhone(APIView):
     def get(self, request, **kwargs):
         phone = format_number(kwargs.get("phone"))
         if User.objects.filter(phone_number=phone).exists():
-            return Response("Account already exists", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Account already registered with this phone number", status=status.HTTP_400_BAD_REQUEST)
 
         twilio_response = TwilioSMS().send_otp(to=phone)
         if not twilio_response:
