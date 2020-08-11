@@ -34,24 +34,24 @@ class FcCustomerSignUpSerializer(FcRegisterSerializer):
 
 class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
 
-    def create(self, validated_data):
+    def create(self, validated_data):   
         user = self.context.get('user')
         customer = get_object_or_404(FcCustomer, user=user)
-
+        print('inside create function')
         # provider_service = get_object_or_404(FcProviderServices  , id=validated_data.get('service_provider'))
         provider_service = validated_data.get('service_provider')
         provider = provider_service.provider
         # send mail here
-        address = validated_data.get('address')
-        client_name = customer.get_name()
+        address = validated_data.get('address') 
+        client_name = customer.get_name() 
         phone = customer.get_phone()
         provider_name = provider.name
         provider_email = provider.user.email
+        FcServiceRequest.objects.create(**validated_data)
 
         ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
-        provider_mail = 'mhoal0vl0l@privacy-mail.top'
+        # provider_mail = 'mhoal0vl0l@privacy-mail.top'
         send_email_('New Request','providers/new_request',provider_email, ctx)
-
         return validated_data
 
     class Meta:

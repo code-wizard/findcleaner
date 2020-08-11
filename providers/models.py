@@ -47,7 +47,7 @@ class FcProviderServices(models.Model):
 
     def __str__(self):
         try:
-            return "{}-{}".format(self.provider.name, self.service.get_category_name() )
+            return "{}-{}".format(self.provider.name, self.service.service() )
         except:
             return "{}".format(self.provider.name)
 
