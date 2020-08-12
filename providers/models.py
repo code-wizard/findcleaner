@@ -64,6 +64,12 @@ class FcProviderServices(models.Model):
             return service_request.request_ratings.all().values('rating_score','review','date_rated')
         return 'No review yet'
 
+    def get_provider_review(self):
+        service_request = self.provider_service_request.first()
+        if service_request:
+            return service_request.request_ratings.all().values('user__first_name','review','date_rated')
+        return 'No review yet'
+
     def get_name(self):
         # firsname = self.provider.user.first_name
         # lastname = self.provider.user.last_name

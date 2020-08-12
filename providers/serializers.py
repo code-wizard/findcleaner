@@ -99,6 +99,7 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
+    reviews = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
 
     def get_avatar_url(self, obj):
@@ -109,6 +110,10 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_address(self, obj):
         return obj.provider.address
+
+    def get_reviews(self, obj):
+        reviews = obj.get_provider_review()
+        return reviews
 
     def get_distance(self,obj):
         lat = self.context.get("lat")
