@@ -96,7 +96,7 @@ class FcSearchProviders(generics.ListAPIView):
         service_id = self.request.GET.get("service_id",None)
         if service_id:
             qs = qs.filter(service_id=service_id)
-
+        
         neighborhood = self.request.GET.get("neighborhood","")
         locality = self.request.GET.get("locality","")
         qs = qs.filter(Q(provider__address__icontains=neighborhood) & Q(provider__address__icontains=locality))
@@ -181,8 +181,8 @@ class FcCustomerServiceHistoryViews(generics.ListAPIView):
     # queryset = FcServiceRequest.objects.all()
 
     def get_queryset(self):
-        user_id = self.kwargs.get("user_id")
-        user = get_object_or_404(User,id=user_id)
+        # user_id = self.kwargs.get("user_id")
+        user = self.request.user #get_object_or_404(User,id=user_id)
         status = self.request.GET.get('status','completed')
         # history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first(),status=status)
         history_tasks = FcServiceRequest.objects.filter(customer=user.customer_info.first())
