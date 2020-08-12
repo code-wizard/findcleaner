@@ -48,7 +48,7 @@ class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
         client_name = customer.get_name() 
         phone = customer.get_phone()
         provider_name = provider.name
-        provider_email = 'hasmeedcoder@gmail.com' #provider.user.email
+        provider_email = provider.user.email
         # FcServiceRequest.objects.create(**validated_data, total_amount=provider_service.billing_rate)
 
         ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
