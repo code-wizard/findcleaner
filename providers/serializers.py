@@ -174,7 +174,7 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         model = FcServiceRequest
         # fields = '__all__'
         exclude = ('created_at','updated_at')
-        read_only_fields = ['service_provider','customer']
+        read_only_fields = ['service_provider','customer','status','duration',]
 
 
 class FcServiceRequestEarningsSerializer(serializers.Serializer):

@@ -19,6 +19,7 @@ def notifiy_provider(sender, instance, **kwargs):
 
     if instance.action == "reject" and instance.start_time is None:
         instance.status = FcServiceRequest.FcRequestStatus.CANCELLED
+
         # instance.save()
 
     if instance.action == "start" and instance.start_time is None:
@@ -30,10 +31,17 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.end_time = datetime.now()
 
         start_time = datetime.strptime(instance.start_time, '%Y-%m-%d %H:%M:%S.%f')
-        duration =  (instance.end_time - start_time).total_seconds() / 60
+        duration =  (instance.end_time - start_time).total_seconds() / 60 # duation in mins
         instance.duration = f"{duration} minutes"
         instance.status = FcServiceRequest.FcRequestStatus.COMPLETED
+        # calculate the amount
+        billing_rate = instance.service_provider.billing_rate
+        charge = round((float(billing_rate)/60) * duration,2)
+        instance.total_amount = charge
+        # send the notification to customer to make payment
         # instance.save()
+    
+    instance.action = None
 
 
 # def trigger_complet ed_service(pre_save, sender=FcServiceRequest):
