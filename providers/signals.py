@@ -14,6 +14,13 @@ def notifiy_provider(sender, instance, **kwargs):
         # if instance.service_billing is None:
         #     print('bill customer now')
 
+    if instance.action == "accept" and instance.start_time is None:
+        instance.status = FcServiceRequest.FcRequestStatus.ACCEPTED
+
+    if instance.action == "reject" and instance.start_time is None:
+        instance.status = FcServiceRequest.FcRequestStatus.CANCELLED
+        # instance.save()
+
     if instance.action == "start" and instance.start_time is None:
         instance.start_time = datetime.now()
         instance.status = FcServiceRequest.FcRequestStatus.ONGOING
