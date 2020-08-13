@@ -53,6 +53,7 @@ class FcServiceRequest(models.Model):
     # expected_start_time = models.TimeField(_('Expected Start Time'), null=True, blank=True)
     start_time = models.CharField(_('Start time'),max_length=500, null=True, blank=True)
     end_time = models.CharField(_('End time'),max_length=500, null=True, blank=True)
+    action = models.CharField(_('action'),max_length=500, null=True, blank=True)
     duration = models.CharField(_('duration'),max_length=500, null=True, blank=True)
     expected_hours_to_complete = models.CharField(_('Expected Complete hours'),max_length=500, null=True, blank=True)
     total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
