@@ -13,7 +13,7 @@ class FcRatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = FcRating
         exclude = ('is_active','is_deleted',)
-        # read_only_fields = ('user',)
+        read_only_fields = ('user','rated','provider_service',)
 
     def validate(self, attrs):
         if FcRating.objects.filter(user=attrs.get('user'),service_request=attrs.get('service_request')).exists():
@@ -26,7 +26,20 @@ class FcRatingSerializer(serializers.ModelSerializer):
                                               " This task is {0}".format(service_request_obj.status))
 
         return attrs
+        
 
+    def create(self, validated):
+        user = self.context.get('user')
+        service_request = validated.get('service_request')
+        rated = service_request.customer.user
+        if rated == user:
+            rated = service_request.service_provider.provider.user
+
+        rating = FcRating.objects.create(**validated, user=user,provider_service=service_request.service_provider,
+                                        rated=rated)
+        rating.save()                                        
+        return validated
+        
 
 class FcRatingUpdateSerializer(serializers.ModelSerializer):
     user = FcUserDetailsSerializer(read_only=True)

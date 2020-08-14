@@ -7,6 +7,13 @@ from django.shortcuts import get_object_or_404
 class FcRatingView(generics.CreateAPIView):
     serializer_class = FcRatingSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({
+            'user': self.request.user
+        })
+        return context
+
 
 class FcRatingUpdateView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FcRatingUpdateSerializer
