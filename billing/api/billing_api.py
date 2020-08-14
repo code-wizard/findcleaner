@@ -90,6 +90,7 @@ class NewBillingView(APIView):
         # if not charge as a new customer
         # this will return authorization url where payment can be made
         data = paystack_instance.charge_customer(context)
+        print('got here')
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
 
@@ -105,6 +106,7 @@ class FcAPIVerifyPayment(APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, **kwargs):
+        print('get here')
         refrence_code = kwargs.get("billing_reference")
         PaystackAPI = load_lib()
         paystack_instance = PaystackAPI()
@@ -112,15 +114,18 @@ class FcAPIVerifyPayment(APIView):
         print(response, "Response")
         # check if payment has been made,
         if response[2]['status'] == 'success':
+            print('success')
             payment_info_from_paystack = response[2]['authorization']
-
-            billing_info = get_object_or_404(FcBillingInfo, billing_reference=refrence_code)
-            billing_info.status = billing_info.Billing_Status.PAID
-            billing_info.save()
-            billing_info.service_request.status = FcServiceRequest.FcRequestStatus.PAID
-            billing_info.service_request.save()
-            FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack, billing_info=billing_info,
-                                                         user=request.user)
+            try:
+                billing_info = get_object_or_404(FcBillingInfo, billing_reference=refrence_code)
+                billing_info.status = billing_info.Billing_Status.PAID
+                billing_info.save()
+                billing_info.service_request.status = FcServiceRequest.FcRequestStatus.PAID
+                billing_info.service_request.save()
+                FcCustomerCardsDetails.objects.get_or_create(**payment_info_from_paystack, billing_info=billing_info,
+                                                            user=request.user)
+            except:
+                print('invalid billing reference')
 
             context = {
                 'status': 200,
@@ -128,8 +133,8 @@ class FcAPIVerifyPayment(APIView):
             }
             return JsonResponse(context)
         return JsonResponse({
-            "status": response[0],
-            "message": response[2]
+            "status": False, #response[0],
+            "message": 'an error occured. initiate new transaction'#response[2]
         })
 
 # def verify_payment(request, billing_reference):
