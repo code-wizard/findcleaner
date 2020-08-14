@@ -29,7 +29,7 @@ class FcBillingInfo(models.Model):
     billing_reference = models.CharField(max_length=255, null=True)
     billing_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=125,choices=status,default='pending')
-    service_request = models.OneToOneField(FcServiceRequest, on_delete=models.DO_NOTHING, related_name="service_billing", null=True)
+    service_request = models.ForeignKey(FcServiceRequest, on_delete=models.DO_NOTHING, related_name="service_billing", null=True)
     billing_info = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
