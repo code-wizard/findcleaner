@@ -32,6 +32,8 @@ class FcRatingSerializer(serializers.ModelSerializer):
         user = self.context.get('user')
         service_request = validated.get('service_request')
         rated = service_request.customer.user
+        if FcRating.objects.filter(user=user,service_request=service_request).exists():
+            raise serializers.ValidationError("sorry, This user has already review the said service request.")
         if rated == user:
             rated = service_request.service_provider.provider.user
 
