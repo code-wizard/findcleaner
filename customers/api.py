@@ -38,6 +38,15 @@ class FcCustomerLoginView(LoginView):
         self.login()
         return self.get_response()
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # customer = get_object_or_404(FcCustomer, user=self.request.user)
+
+        context.update({
+            'account_type':User.FcAccountType.CUSTOMER
+        })
+        return context
+
 
 class FcCustomerRegisterView(APIView):
     serializer_class = FcCustomerSignUpSerializer

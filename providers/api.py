@@ -51,6 +51,16 @@ class FcProviderLoginView(LoginView):
         return self.get_response()
 
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # customer = get_object_or_404(FcCustomer, user=self.request.user)
+
+        context.update({
+            'account_type':User.FcAccountType.PROVIDER
+        })
+        return context
+
+
 class FcProviderRegisterView(APIView):
     """
     provider signup endpoint. pass a list of services to services_info field
@@ -115,10 +125,14 @@ class FcProviderSummaryDashboard(APIView):
             service_provider_obj = myservices.first()
             my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
             completed_service = my_service_requests.filter(status='completed')
+            print('completed_service', completed_service)
+            rev_sum = completed_service.aggregate(Sum('total_amount')) #['total_amount__sum']
+            print('rev_sum', rev_sum)
             total_service = myservices.count()
             cancelled_service = my_service_requests.filter(status='cancel').count()
             schedule_service = my_service_requests.filter(status='accepted').count()
             my_revenue = 0 if completed_service == None else completed_service.aggregate(Sum('total_amount'))['total_amount__sum']
+            print('my_revenue',my_revenue)
         except AttributeError:
             total_service = 0
             cancelled_service = 0

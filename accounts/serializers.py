@@ -79,8 +79,7 @@ class FcLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg)
 
         # check if a customer is trying to login into the provider app
-
-        if self.context.get('account_type') == 'provider' and user.account_type == 'customer':
+        if self.context.get('account_type') != user.account_type:
             raise serializers.ValidationError(_('You are not allowed to access this section of FindCleaner'))
 
         # If required, is the email verified?
