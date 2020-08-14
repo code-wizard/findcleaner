@@ -22,7 +22,7 @@ UserModel = get_user_model()
 
 
 class FcUserSerializer(serializers.ModelSerializer):
-    avatar = Base64ImageField(write_only=True)
+    avatar = Base64ImageField(write_only=False)
 
     def validate_avatar(self, image):
 
