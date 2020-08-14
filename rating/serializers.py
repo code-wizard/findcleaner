@@ -21,7 +21,7 @@ class FcRatingSerializer(serializers.ModelSerializer):
 
         service_request_obj = get_object_or_404(FcServiceRequest, id=attrs.get('service_request').id)
         # FcServiceRequest.objects.filter()
-        if service_request_obj.status != 'cancel' and service_request_obj.status != 'completed':
+        if service_request_obj.status != 'cancel' and service_request_obj.status != 'completed' and service_request_obj.status != 'paid':
             raise serializers.ValidationError("You can only review completed or cancelled task."
                                               " This task is {0}".format(service_request_obj.status))
 
