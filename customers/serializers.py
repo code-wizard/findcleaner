@@ -52,7 +52,6 @@ class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
         # FcServiceRequest.objects.create(**validated_data, total_amount=provider_service.billing_rate)
 
         ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
-        # provider_mail = 'mhoal0vl0l@privacy-mail.top'
         send_email_.delay('New Request','providers/new_request',provider_email, ctx)
         return validated_data
 

@@ -31,6 +31,15 @@ class FcProvider(models.Model):
             return self.name
         return f"{self.user.first_name} {self.user.last_name}"
 
+    def get_name(self):
+        firsname = self.user.first_name
+        lastname = self.user.last_name
+        return "{} {}".format(firsname, lastname)
+
+    def get_phone(self):
+        return self.user.phone_number
+        
+
     class Meta:
         db_table = "fc_provider"
         verbose_name = _("Provider")

@@ -2,6 +2,8 @@ from django.db.models.signals import pre_save
 from customers.models import FcServiceRequest
 from django.dispatch import receiver
 from datetime import datetime
+from accounts.tasks import send_email_
+
 
 @receiver(pre_save, sender = FcServiceRequest)
 def notifiy_provider(sender, instance, **kwargs):
@@ -16,6 +18,15 @@ def notifiy_provider(sender, instance, **kwargs):
 
     if instance.action == "accept" and instance.start_time is None:
         instance.status = FcServiceRequest.FcRequestStatus.ACCEPTED
+        # send mail to customer 
+        customer_email = instance.customer.user.email
+        phone = instance.provider.get_phone()
+        provider_name = provider.name
+        customer_name = instance.customer.get_name()
+        ctx = {'customer_name':customer_name, 'provider_name':provider_name, 'phone':phone}
+
+        send_email_.delay('Service Schedule','customers/service_schedule',customer_email, ctx)
+
 
     if instance.action == "reject" and instance.start_time is None:
         instance.status = FcServiceRequest.FcRequestStatus.CANCELLED
