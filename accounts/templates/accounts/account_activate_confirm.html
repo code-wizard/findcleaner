@@ -39,10 +39,15 @@
 
   <body class="body">
     <section class="section">
+      {% if status == 'Activated' %}
       <p class="icon"><i class="fas fa-check"></i></p>
       Your account has been successfully activated. You can now
 <!--      <a href="https://{{ domain }}.manageme.net/login" class="login">login </a>-->
       login on the app.
+      {% else %}
+            <p class="icon"><i class="fas fa-bug" style="font-size:48px;color:red"></i></p>
+      <span style="color:red">There is an error while activating account. Contact admin or try again later</span>
+      {% endif %}
     </section>
   </body>
 
