@@ -16,8 +16,8 @@ class FcRatingSerializer(serializers.ModelSerializer):
         read_only_fields = ('user','rated','provider_service',)
 
     def validate(self, attrs):
-        if FcRating.objects.filter(user=attrs.get('user'),service_request=attrs.get('service_request')).exists():
-            raise serializers.ValidationError("sorry, This user has already review the said service request.")
+        # if FcRating.objects.filter(user=attrs.get('user'),service_request=attrs.get('service_request')).exists():
+        #     raise serializers.ValidationError("sorry, This user has already review the said service request.")
 
         service_request_obj = get_object_or_404(FcServiceRequest, id=attrs.get('service_request').id)
         # FcServiceRequest.objects.filter()

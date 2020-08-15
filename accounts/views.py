@@ -29,7 +29,7 @@ account_confirm = FcConfirmEmailView.as_view()
 
 
 
-class ConfirmEmailView(APIView):
+class ConfirmEmailView(TemplateResponseMixin, APIView):
     template_name = "accounts/account_activate_confirm.html"
     permission_classes = ()
 
@@ -46,8 +46,9 @@ class ConfirmEmailView(APIView):
             status = "Activated"
         else:
             status = 'Error'
+        
+        return self.render_to_response({"status": status})
 
-        return Response({"status": status})
 
     def get(self, *args, **kwargs):
         self.object = confirmation = self.get_object()
@@ -57,6 +58,7 @@ class ConfirmEmailView(APIView):
         else:
             status = 'Error'
 
-        return Response({"status": status})
+        return self.render_to_response({"status": status})
+
 
 confirm_email = ConfirmEmailView.as_view()
