@@ -10,7 +10,7 @@ def notifiy_provider(sender, instance, **kwargs):
     # if created:
     #     print('creating new request')
     print('updating service request')
-    provider = instance.service_provider
+    provider = instance.service_provider.provider
     if instance.status == FcServiceRequest.FcRequestStatus.COMPLETED:
         print('service request is completed')
         # if instance.service_billing is None:
@@ -20,7 +20,7 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.status = FcServiceRequest.FcRequestStatus.ACCEPTED
         # send mail to customer 
         customer_email = instance.customer.user.email
-        phone = instance.provider.get_phone()
+        phone = provider.get_phone() 
         provider_name = provider.name
         customer_name = instance.customer.get_name()
         ctx = {'customer_name':customer_name, 'provider_name':provider_name, 'phone':phone}
