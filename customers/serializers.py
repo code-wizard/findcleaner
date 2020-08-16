@@ -49,7 +49,7 @@ class FcCreateServiceRequestSerializer(serializers.ModelSerializer):
         phone = customer.get_phone()
         provider_name = provider.name
         provider_email = provider.user.email
-        # FcServiceRequest.objects.create(**validated_data, total_amount=provider_service.billing_rate)
+        FcServiceRequest.objects.create(**validated_data, total_amount=provider_service.billing_rate)
 
         ctx = {'provider_name':provider_name,'location':address,'name':client_name,'phone':phone}
         send_email_.delay('New Request','providers/new_request',provider_email, ctx)
