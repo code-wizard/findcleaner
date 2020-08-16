@@ -38,7 +38,7 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.status = FcServiceRequest.FcRequestStatus.ONGOING
         # instance.save()
 
-    if instance.action == "stop" and instance.start_time is not None:
+    if instance.action == "end" and instance.start_time is not None:
         instance.end_time = datetime.now()
 
         start_time = datetime.strptime(instance.start_time, '%Y-%m-%d %H:%M:%S.%f')
