@@ -69,12 +69,13 @@ class NewBillingView(APIView):
 
         PaystackAPI = load_lib()
         paystack_instance = PaystackAPI()
-
+        
         context = {
             "reference": str(uuid4()),
             "email": customer_info['email'],
-            "amount": service_request.total_amount
+            "amount": service_request.total_amount.replace(".","")
         }
+
         auth_code = self.request.GET.get("authorization_code")
 
         # check if the customer card details exists with the auth_code
@@ -90,7 +91,6 @@ class NewBillingView(APIView):
         # if not charge as a new customer
         # this will return authorization url where payment can be made
         data = paystack_instance.charge_customer(context)
-        print('got here')
         serializer.save(billing_reference=context['reference'])
         return JsonResponse({"data": data})
 
@@ -106,15 +106,12 @@ class FcAPIVerifyPayment(APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, **kwargs):
-        print('get here')
         refrence_code = kwargs.get("billing_reference")
         PaystackAPI = load_lib()
         paystack_instance = PaystackAPI()
         response = paystack_instance.verify_payment(refrence_code)
-        print(response, "Response")
         # check if payment has been made,
         if response[2]['status'] == 'success':
-            print('success')
             payment_info_from_paystack = response[2]['authorization']
             try:
                 billing_info = get_object_or_404(FcBillingInfo, billing_reference=refrence_code)
