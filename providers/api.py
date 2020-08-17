@@ -34,7 +34,7 @@ class FcProviderLoginView(LoginView):
             'token': self.token
         }
         serializer = serializer_class(instance=data, context={'request': self.request})
-
+        
         provider = serializers.FcProviderSerializer(self.user.provider_info).data
         return Response({"user": serializer.data, 'provider': provider}, status=status.HTTP_200_OK)
 
@@ -125,14 +125,11 @@ class FcProviderSummaryDashboard(APIView):
             service_provider_obj = myservices.first()
             my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
             completed_service = my_service_requests.filter(status='completed')
-            print('completed_service', completed_service)
             rev_sum = completed_service.aggregate(Sum('total_amount')) #['total_amount__sum']
-            print('rev_sum', rev_sum)
             total_service = myservices.count()
             cancelled_service = my_service_requests.filter(status='cancel').count()
             schedule_service = my_service_requests.filter(status='accepted').count()
             my_revenue = 0 if completed_service == None else completed_service.aggregate(Sum('total_amount'))['total_amount__sum']
-            print('my_revenue',my_revenue)
         except AttributeError:
             total_service = 0
             cancelled_service = 0

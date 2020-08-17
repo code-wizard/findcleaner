@@ -104,7 +104,7 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_avatar_url(self, obj):
         try:
-            return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
+            return "{}{}".format(settings.DOMAIN, obj.provider.user.avatar.url)
         except Exception as e:
             return None
 
