@@ -56,7 +56,7 @@ class FcServiceRequest(models.Model):
     action = models.CharField(_('action'),max_length=500, null=True, blank=True)
     duration = models.CharField(_('duration'),max_length=500, null=True, blank=True)
     expected_hours_to_complete = models.CharField(_('Expected Complete hours'),max_length=500, null=True, blank=True)
-    total_amount = models.FloatField(_('Amount'),max_length=120, null=True, blank=True)
+    total_amount = models.CharField(_('Amount'),max_length=120, null=True, blank=True)
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)
     payment_mode = models.CharField(_('Payment Mode'),choices=payment_mode, default='cash',max_length=500, null=True, blank=True)
     service_deliver_on = models.DateField(_('Service Delivered on'),max_length=500, null=True, blank=True)
