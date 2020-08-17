@@ -80,7 +80,6 @@ class Transaction(BaseClass):
             # 'callback_url': kwargs['callback_url']
         }
         response = self.make_request('POST', path, json=json_data)
-        print('response',response)
         return self.result_format(response)
 
     def verify_payment(self,code, **kwargs):

@@ -73,7 +73,8 @@ class NewBillingView(APIView):
         context = {
             "reference": str(uuid4()),
             "email": customer_info['email'],
-            "amount": service_request.total_amount.replace(".","")
+            "amount": service_request.total_amount.replace(".",""),
+            "callback_url": "findcleaner://findcleaner.ng"
         }
 
         auth_code = self.request.GET.get("authorization_code")
