@@ -16,6 +16,8 @@ from accounts.serializers import FcLoginSerializer
 from core.permissions import IsCustomer,IsProvider,IsStaff
 from rest_framework import filters,status
 from core import pagination
+from services.serializers import ServiceSerializer
+from services.models import FcService
 
 
 User = get_user_model()
@@ -34,7 +36,7 @@ class FcProviderLoginView(LoginView):
             'token': self.token
         }
         serializer = serializer_class(instance=data, context={'request': self.request})
-        
+
         provider = serializers.FcProviderSerializer(self.user.provider_info).data
         return Response({"user": serializer.data, 'provider': provider}, status=status.HTTP_200_OK)
 
@@ -266,8 +268,23 @@ class FcUpdateProviderServiceView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         user = self.request.user
-        provider = get_object_or_404(FcProvider, user=user)
+        provider = get_object_or_404(FcProvider, user=user) 
 
         provider_service_id = self.kwargs.get('provider_service_id')
         p_services = get_object_or_404(FcProviderServices,provider = provider,id=provider_service_id)
         return p_services
+
+
+class FcServiceList(ListAPIView):
+    """
+    View list of all services of a logged in provider
+    """
+    serializer_class = ServiceSerializer
+    # queryset = FcService.objects.all()
+
+    permission_classes = (IsProvider,)
+    def get_queryset(self):
+        user = self.request.user
+        provider = get_object_or_404(FcProvider, user=user)
+        my_services = FcService.objects.all().exclude(id__in = provider.my_services.all()) 
+        return my_services
