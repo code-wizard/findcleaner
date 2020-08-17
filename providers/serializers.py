@@ -112,7 +112,7 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
         return obj.provider.address
 
     def get_reviews(self, obj):
-        reviews = FcRating.objects.filter(rated=obj.provider.user.id).values('rating_score','review','date_rated') #obj.get_provider_review()
+        reviews = FcRating.objects.filter(rated=obj.provider.user.id).values('user__first_name','review','date_rated') 
         return reviews
 
     def get_distance(self,obj):
