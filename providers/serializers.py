@@ -153,6 +153,7 @@ class FcProviderDashboard(serializers.Serializer):
     total_service = serializers.IntegerField(read_only=True)
     cancelled_service = serializers.IntegerField(read_only=True)
     schedule_service = serializers.IntegerField(read_only=True)
+    completed_services = serializers.IntegerField(read_only=True)
     my_revenue = serializers.IntegerField(read_only=True)
 
 
