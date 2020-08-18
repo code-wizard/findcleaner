@@ -96,7 +96,7 @@ class FcVerifyPhoneForPasswordReset(APIView):
 class ResetPasswordView(APIView):
 
     def post(self, request):
-        phone = self.request.data.get("phone")
+        phone = format_number(self.request.data.get("phone"))
         password = self.request.data.get("password")
         try:
             user = User.objects.get(phone_number=phone)
