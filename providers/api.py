@@ -127,11 +127,12 @@ class FcProviderSummaryDashboard(APIView):
         try:
             myservices = provider.my_services.all()
             service_provider_obj = myservices.first()
-            my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
+            my_service_requests = FcServiceRequest.objects.filter(service_provider__in=myservices)
             completed_service = my_service_requests.filter(status__in=('completed','paid'))
             my_revenue = 0 if completed_service == None else completed_service.annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
-            total_service = myservices.count()
+            total_service = my_service_requests.count()
             cancelled_service = my_service_requests.filter(status='cancel').count()
+            new_services = my_service_requests.filter(status='new').count()
             schedule_service = my_service_requests.filter(status='accepted').count()
             completed_services = my_service_requests.filter(status__in = ('completed', 'paid')).count()
         except AttributeError:
@@ -140,11 +141,13 @@ class FcProviderSummaryDashboard(APIView):
             schedule_service = 0
             my_revenue = 0
             completed_services = 0
+            new_services = 0
         dashbooard_summary = {
             'total_service':total_service,
             'cancelled_service':cancelled_service,
             'schedule_service':schedule_service,
             'completed_services':completed_services,
+            'new_services':new_services,
             'my_revenue': 0 if my_revenue == None else my_revenue
         }
 
