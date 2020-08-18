@@ -96,6 +96,7 @@ class FcMyServicesSerializer(serializers.ModelSerializer):
 class FcProviderServicesSerializer(serializers.ModelSerializer):
     service_name = serializers.SerializerMethodField(read_only=True)
     avatar_url = serializers.SerializerMethodField(read_only=True)
+    profile_avatar_url = serializers.SerializerMethodField(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
     distance = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
@@ -104,9 +105,16 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_avatar_url(self, obj):
         try:
+            return "{}{}".format(settings.DOMAIN, obj.service.avatar.url)
+        except Exception as e:
+            return None
+
+    def get_profile_avatar_url(self, obj):
+        try:
             return "{}{}".format(settings.DOMAIN, obj.provider.user.avatar.url)
         except Exception as e:
             return None
+
 
     def get_address(self, obj):
         return obj.provider.address
