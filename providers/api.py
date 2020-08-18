@@ -128,7 +128,7 @@ class FcProviderSummaryDashboard(APIView):
             myservices = provider.my_services.all()
             service_provider_obj = myservices.first()
             my_service_requests = FcServiceRequest.objects.filter(service_provider=service_provider_obj)
-            completed_service = my_service_requests.filter(status='completed')
+            completed_service = my_service_requests.filter(status__in=('completed','paid'))
             my_revenue = 0 if completed_service == None else completed_service.annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
             total_service = myservices.count()
             cancelled_service = my_service_requests.filter(status='cancel').count()
@@ -230,9 +230,9 @@ class FcProviderEarnings(ListAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        my_revenue = self.get_queryset().filter(status='completed').annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
+        my_revenue = self.get_queryset().filter(status__in = ('completed', 'paid')).annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
         context.update({
-            'total_earnings': my_revenue
+            'total_earnings': round(my_revenue)
         })
         return context
 
