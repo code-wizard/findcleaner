@@ -79,6 +79,30 @@ class FcVerfiyOTP(APIView):
         return Response(message)
 
 
+class FcVerifyPhoneForPasswordReset(APIView):
+    # serializer_class = serializers.FcPhoneSerializer
+
+    def get(self, request, **kwargs):
+        phone = format_number(kwargs.get("phone"))
+        if not User.objects.filter(phone_number=phone).exists():
+            return Response("User account not found. You can sign up instead", status=status.HTTP_400_BAD_REQUEST)
+
+        twilio_response = TwilioSMS().send_otp(to=phone)
+        if not twilio_response:
+            return Response({"status":"error", "message":"an error occured. Try after some time"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response("success", status=status.HTTP_200_OK)
 
 
+class ResetPasswordView(APIView):
 
+    def post(self, request):
+        phone = self.request.data.get("phone")
+        password = self.request.data.get("password")
+        try:
+            user = User.objects.get(phone_number=phone)
+            user.set_password(password)
+            user.save()
+        except:
+            return Response("error", status=status.HTTP_404_NOT_FOUND)
+
+        return Response("success", status=status.HTTP_200_OK)

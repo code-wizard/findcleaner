@@ -17,5 +17,8 @@ urlpatterns = [
     path('signup/', api.FcRegisterView.as_view()),
     path('update-user/<id>/', api.UserUpdateDeleteView.as_view()),
     path('phone-verify/<phone>/', api.FcValidatePhone.as_view()),
-    path('verify-otp/', api.FcVerfiyOTP.as_view())
+    path('verify-otp/', api.FcVerfiyOTP.as_view()),
+    path('phone-verify-password/<phone>/', api.FcVerifyPhoneForPasswordReset.as_view()),
+    path('reset-password/', api.ResetPasswordView.as_view())
 ]
+ 
