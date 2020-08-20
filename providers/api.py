@@ -18,8 +18,8 @@ from rest_framework import filters,status
 from core import pagination
 from services.serializers import ServiceSerializer
 from services.models import FcService
-
-
+from rating.models import FcRating
+from django.db.models import Avg
 User = get_user_model()
 
 
@@ -36,9 +36,11 @@ class FcProviderLoginView(LoginView):
             'token': self.token
         }
         serializer = serializer_class(instance=data, context={'request': self.request})
-
+        rating = FcRating.objects.filter(rated=self.user).aggregate(Avg('rating_score')).get("rating_score__avg", 0) 
+        rating = 0 if not rating else round(rating, 1)   
+        # rating = 0 if not rating else round(rating, 1)   
         provider = serializers.FcProviderSerializer(self.user.provider_info).data
-        return Response({"user": serializer.data, 'provider': provider}, status=status.HTTP_200_OK)
+        return Response({"user": serializer.data,'rating':rating, 'provider': provider}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         self.request = request

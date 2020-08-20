@@ -58,7 +58,7 @@ class FcProviderSignUpSerializer(FcRegisterSerializer):
             if services_info:
                 FcProviderServices.objects.bulk_create(
                     [FcProviderServices(service_id=service["service_id"],
-                                       billing_rate = service["billing_rate"],
+                                    #    billing_rate = service["billing_rate"],
                                        service_description=service["service_description"],
                                        provider=provider_info)
                      for service in eval(services_info)])
@@ -133,7 +133,7 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         rating = FcRating.objects.filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
-        return rating.get("rating_score__avg")
+        return round(rating.get("rating_score__avg"),1)
         # return obj.get_my_ratings()
 
     def get_name(self,obj):

@@ -20,13 +20,32 @@ from uuid import uuid4
 from billing.models import FcCustomerCardsDetails,DefaultCardBillingInfo,FcBillingInfo
 from django.http import JsonResponse
 from core.mail_utils import send_email_
-
+from rating.models import FcRating
+from django.db.models import Avg
 User = get_user_model()
 
 
 class FcCustomerLoginView(LoginView):
 
     serializer_class = FcLoginSerializer
+
+    def get_response(self):
+        serializer_class = self.get_response_serializer()
+        rating = FcRating.objects.filter(rated=self.user).aggregate(Avg('rating_score')).get("rating_score__avg", 0)
+        rating = 0 if not rating else round(rating, 1)   
+        data = {
+            'user': self.user,
+            'token': self.token,
+            'rating': rating
+        }
+        serializer = serializer_class(instance=data, context={'request': self.request})
+        newdict={'rating':rating}
+        newdict.update(serializer.data)
+        # rating = FcRating.objects.filter(rated=self.user).aggregate(Avg('rating_score'))
+        # rating = round(rating.get("rating_score__avg"), 1)   
+        # provider = serializers.FcProviderSerializer(self.user.provider_info).data
+        return Response(newdict, status=status.HTTP_200_OK)
+
 
     def post(self, request, *args, **kwargs):
         self.request = request
@@ -103,9 +122,11 @@ class FcSearchProviders(generics.ListAPIView):
     def get_queryset(self):
         qs = FcProviderServices.objects.all()
         service_id = self.request.GET.get("service_id",None)
+
         if service_id:
             qs = qs.filter(service_id=service_id)
         
+
         neighborhood = self.request.GET.get("neighborhood","")
         locality = self.request.GET.get("locality","")
         qs = qs.filter(Q(provider__address__icontains=neighborhood) & Q(provider__address__icontains=locality))
