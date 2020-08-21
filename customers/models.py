@@ -59,7 +59,7 @@ class FcServiceRequest(models.Model):
     total_amount = models.CharField(_('Amount'),max_length=120, null=True, blank=True)
     status = models.CharField(_('Status'),max_length=120,default='new', choices=status)
     payment_mode = models.CharField(_('Payment Mode'),choices=payment_mode, default='cash',max_length=500, null=True, blank=True)
-    service_deliver_on = models.DateField(_('Service Delivered on'),max_length=500, null=True, blank=True)
+    service_deliver_on = models.DateTimeField(_('Service Delivered on'),max_length=500, null=True, blank=True)
     no_of_pets = models.PositiveIntegerField(default=0, null=True)
     no_of_toilets = models.PositiveIntegerField(default=0, null=True)
     no_of_spaces = models.PositiveIntegerField(default=0, null=True)
