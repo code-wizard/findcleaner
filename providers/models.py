@@ -67,9 +67,9 @@ class FcProviderServices(models.Model):
             return None
 
     def get_billing_rate(self):
-        billing_rate = self.service.agency_base_price if self.service_provider.provider.type == 'agency' else self.service.individual_base_price
+        billing_rate = self.service.agency_base_price if self.provider.type == 'agency' else self.service.individual_base_price
         return billing_rate
-        
+
 
     def get_my_ratings(self):
         service_request = self.provider_service_request.first()
