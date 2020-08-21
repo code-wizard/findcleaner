@@ -48,7 +48,7 @@ def notifiy_provider(sender, instance, **kwargs):
         billing_rate = instance.billing_rate() #instance.service_provider.billing_rate
         print('billing_rate', billing_rate)
         charge = round((float(billing_rate)/60) * duration,2)
-        instance.total_amount = charge
+        instance.total_amount = f"{charge:.2f}"
         # send the notification to customer to make payment
         # instance.save()
     instance.action = None
