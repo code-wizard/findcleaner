@@ -133,7 +133,9 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         rating = FcRating.objects.filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
-        return round(rating.get("rating_score__avg"),1)
+        if rating:
+            return round(rating.get("rating_score__avg"),1)
+        return "0"
         # return obj.get_my_ratings()
 
     def get_name(self,obj):
