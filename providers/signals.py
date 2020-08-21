@@ -45,7 +45,8 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.status = FcServiceRequest.FcRequestStatus.COMPLETED
         instance.service_deliver_on = datetime.now()
         # calculate the amount
-        billing_rate = instance.billing_rate #instance.service_provider.billing_rate
+        billing_rate = instance.billing_rate() #instance.service_provider.billing_rate
+        print('billing_rate', billing_rate)
         charge = round((float(billing_rate)/60) * duration,2)
         instance.total_amount = charge
         # send the notification to customer to make payment
