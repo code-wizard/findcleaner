@@ -168,6 +168,7 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
     customer_user_id = serializers.CharField(source="customer.user.id", read_only=True)
     provider_user_id = serializers.CharField(source="service_provider.provider.user.id", read_only=True)
     customer_rating = serializers.SerializerMethodField(read_only=True)
+    rated = serializers.SerializerMethodField(read_only=True)
 
     def get_customer_image(self, obj):
         try:
@@ -178,6 +179,12 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
     def get_customer_rating(self, obj):
         rating = obj.request_ratings.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
         return rating.get("rating_score__avg")
+
+
+    def get_rated(self, obj):
+        user = self.context.get('user')
+        rating = obj.request_ratings.filter(user=user, service_request=obj).exists()
+        return rating
 
     def get_service_name(self, obj):
         return obj.get_service_name()

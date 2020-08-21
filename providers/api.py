@@ -70,9 +70,9 @@ class FcProviderRegisterView(APIView):
     provider signup endpoint. pass a list of services to services_info field
     in the format below
 
-    [{"service_id":1,"billing_rate":2500,
+    [{"service_id":1,
     "service_description":"description"},
-    {"service_id":2,"billing_rate":2300,
+    {"service_id":2,
     "service_description":"good service"}]
     """
     serializer_class = serializers.FcProviderSignUpSerializer
@@ -190,6 +190,14 @@ class FcMyServiceRequest(ListAPIView):
     serializer_class = serializers.FcServiceRequestSerializer
     # permission_classes = (IsProvider,)
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        print('context', context)
+        context.update({
+            'user': self.request.user
+        })
+        return context
+
     def get_queryset(self):
         user = self.request.user
         provider = user.provider_info
@@ -237,7 +245,7 @@ class FcProviderEarnings(ListAPIView):
         context = super().get_serializer_context()
         my_revenue = self.get_queryset().filter(status__in = ('completed', 'paid')).annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
         context.update({
-            'total_earnings': round(my_revenue)
+            'total_earnings': round(my_revenue,2)
         })
         return context
 
