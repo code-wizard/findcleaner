@@ -102,6 +102,7 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField(read_only=True)
     reviews = serializers.SerializerMethodField(read_only=True)
     address = serializers.SerializerMethodField(read_only=True)
+    billing_rate = serializers.SerializerMethodField(read_only=True)
 
     def get_avatar_url(self, obj):
         try:
@@ -118,6 +119,9 @@ class FcProviderServicesSerializer(serializers.ModelSerializer):
 
     def get_address(self, obj):
         return obj.provider.address
+
+    def get_billing_rate(self, obj):
+        return obj.get_billing_rate()
 
     def get_reviews(self, obj):
         reviews = FcRating.objects.filter(rated=obj.provider.user.id).values('user__first_name','review','date_rated') 
