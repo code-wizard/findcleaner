@@ -37,10 +37,8 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.start_time = datetime.now()
         instance.status = FcServiceRequest.FcRequestStatus.ONGOING
         # instance.save()
-
     if instance.action == "end" and instance.start_time is not None:
         instance.end_time = datetime.now()
-
         start_time = datetime.strptime(instance.start_time, '%Y-%m-%d %H:%M:%S.%f')
         duration =  round((instance.end_time - start_time).total_seconds() / 60,2) # duation in mins
         instance.duration = f"{duration} minutes"
@@ -52,7 +50,6 @@ def notifiy_provider(sender, instance, **kwargs):
         instance.total_amount = charge
         # send the notification to customer to make payment
         # instance.save()
-    
     instance.action = None
 
 

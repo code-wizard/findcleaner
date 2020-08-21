@@ -38,7 +38,7 @@ class FcProvider(models.Model):
 
     def get_phone(self):
         return self.user.phone_number
-        
+
 
     class Meta:
         db_table = "fc_provider"
@@ -48,7 +48,7 @@ class FcProvider(models.Model):
 class FcProviderServices(models.Model):
     service = models.ForeignKey(FcService, on_delete=models.SET_NULL, related_name="service_provider", null=True)
     provider = models.ForeignKey(FcProvider, on_delete=models.SET_NULL, related_name="my_services", null=True)
-    billing_rate = models.CharField(max_length=255, blank=True, null=True)
+    # billing_rate = models.CharField(max_length=255, blank=True, null=True)
     # experience = models.CharField(max_length=255, blank=True, null=True)
     service_description = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -70,11 +70,15 @@ class FcProviderServices(models.Model):
     def get_my_ratings(self):
         service_request = self.provider_service_request.first()
         if service_request:
+            print('service_request', service_request)
+            # rating = FcRating.objects.all() #filter(rated=obj.provider.user.id).aggregate(Avg('rating_score'))
+            # return rating
             return service_request.request_ratings.all().values('rating_score','review','date_rated')
         return 'No review yet'
 
     def get_provider_review(self):
         service_request = self.provider_service_request.first()
+        print('service_request', service_request)
         if service_request:
             return service_request.request_ratings.all().values('user__first_name','review','date_rated')
         return 'No review yet'
