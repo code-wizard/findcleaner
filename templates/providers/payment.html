@@ -24,7 +24,10 @@
 							<span style="font-weight:bold">duration : </span>{{duration}}
 						</div>
                         <div>
-							<span style="font-weight:bold">Service Time : </span>{{ deliver_on|date:"dS, F, Y. h: sa"}}
+							<span style="font-weight:bold">Service Date : </span>{{ deliver_on|date:"D d M Y"}}
+						</div>
+						<div>
+							<span style="font-weight:bold">Service Time : </span>{{ deliver_on|time:"H:i"}}
 						</div>
 						<div>
 							<span style="font-weight:bold">Amount : </span>₦{{amount}}
