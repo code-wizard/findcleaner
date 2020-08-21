@@ -184,7 +184,6 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
         rating = obj.request_ratings.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
         return rating.get("rating_score__avg")
 
-
     def get_rated(self, obj):
         user = self.context.get('user')
         rating = obj.request_ratings.filter(user=user, service_request=obj).exists()

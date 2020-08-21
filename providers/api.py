@@ -167,6 +167,12 @@ class FcServiceRequestDetail(RetrieveAPIView):
     def get_object(self):
         return get_object_or_404(FcServiceRequest, pk=self.request.query_params.get("id"))
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({
+            'user': self.request.user
+        })
+        return context
 
 class FcUpdateServiceRequest(UpdateAPIView):
     """
