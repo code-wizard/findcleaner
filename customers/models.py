@@ -80,6 +80,10 @@ class FcServiceRequest(models.Model):
     def get_service_name(self):
         return self.service.service
 
+    def billing_rate(self):
+        account_type = self.service.agency_base_price if self.service_provider.provider.type == 'agency' else self.service.individual_base_price
+        return account_type
+
 
     class Meta:
         db_table = "fc_service_request"

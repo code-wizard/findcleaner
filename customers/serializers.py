@@ -66,9 +66,13 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
     service_provider = FcProviderServicesSerializer(read_only=True)
     name = serializers.SerializerMethodField(read_only=True)
     customer_user_id = serializers.IntegerField(source="customer.user.id", read_only=True)
+    billing_rate = serializers.SerializerMethodField(read_only=True)
 
     def get_name(self, obj):
         return obj.get_customer_name()
+
+    def get_billing_rate(self, obj):
+        return obj.billing_rate()
 
     class Meta:
         model = FcServiceRequest
