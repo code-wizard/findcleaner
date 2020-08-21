@@ -16,6 +16,7 @@ from core.permissions import IsProvider
 from rest_framework import filters
 from core import pagination
 from django.contrib.auth import get_user_model
+from accounts.tasks import send_email_
 
 User = get_user_model()
 
@@ -129,6 +130,23 @@ class FcAPIVerifyPayment(APIView):
                 'status': 200,
                 'message': "Payment has been made successfully"
             }
+            service_request = billing_info.service_request
+            service_name = service_request.service.service
+            duration = service_request.duration
+            amount = service_request.total_amount
+            deliver_on = service_request.service_deliver_on
+            customer_name = service_request.customer.get_name()
+            provider_name = service_request.service_provider.provider.name
+            invoice_id = "1234"
+            customer_email = service_request.customer.user.email
+            provider_email = service_request.service_provider.provider.user.email
+
+            ctx = {'service_name':service_name,'invoice_id':invoice_id, 'duration':duration, 'amount':amount
+                    , 'deliver_on':deliver_on, 'customer_name':customer_name, 'provider_name':provider_name}
+
+            send_email_.delay('Service Paid','customers/payment',customer_email, ctx)
+            send_email_.delay('Service Paid','providers/payment',provider_email, ctx)
+            
             return JsonResponse(context)
         return JsonResponse({
             "status": False, #response[0],
