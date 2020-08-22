@@ -140,6 +140,7 @@ class FcAPIVerifyPayment(APIView):
             invoice_id = "1234"
             customer_email = service_request.customer.user.email
             provider_email = service_request.service_provider.provider.user.email
+            deliver_on = deliver_on.strftime("%A, %d of %B, %Y: %l:%M%p")
 
             ctx = {'service_name':service_name,'invoice_id':invoice_id, 'duration':duration, 'amount':amount
                     , 'deliver_on':deliver_on, 'customer_name':customer_name, 'provider_name':provider_name}
