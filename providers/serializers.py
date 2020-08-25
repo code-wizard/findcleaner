@@ -181,7 +181,8 @@ class FcServiceRequestSerializer(serializers.ModelSerializer):
             return None
 
     def get_customer_rating(self, obj):
-        rating = obj.request_ratings.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
+        rating = FcRating.objects.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
+        # rating = obj.request_ratings.filter(rated=obj.customer.user.id).aggregate(Avg('rating_score'))
         return rating.get("rating_score__avg")
 
     def get_rated(self, obj):
