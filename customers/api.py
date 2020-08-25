@@ -130,7 +130,8 @@ class FcSearchProviders(generics.ListAPIView):
         neighborhood = self.request.GET.get("neighborhood","")
         locality = self.request.GET.get("locality","")
         # qs = qs.filter(Q(provider__address__icontains=neighborhood) & Q(provider__state__icontains=locality) | Q(provider__city__icontains=locality))
-        qs = qs.filter( Q(provider__state__icontains=locality) | Q(provider__city__icontains=locality))
+        # qs = qs.filter( Q(provider__state__icontains=locality) | Q(provider__city__icontains=locality))
+        qs = qs.order_by('distance')
         return qs
 
     def get_serializer_context(self):
