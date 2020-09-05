@@ -94,7 +94,7 @@ class FcLoginSerializer(serializers.Serializer):
 
         uidb36 = user_pk_to_url_str(user)
         rating = FcRating.objects.filter(rated=user)
-        if rating is not None:
+        if rating.exists():
             rating = rating.aggregate(Avg('rating_score'))
             attrs['user_rating'] = rating.get("rating_score__avg")  
         else:
