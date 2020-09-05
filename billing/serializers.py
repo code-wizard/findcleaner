@@ -12,6 +12,10 @@ class FcBillingInfoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('billing_reference','status',)
 
+    # def create(self, validated_data):
+    #     print('creating new')
+    #     return validated_data
+
 
 class FcEarningInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,7 +69,7 @@ class FcInitiateCustomerPaymentInfoSerializer(serializers.Serializer):
 
             transfer_ctx = {
                 "amount": service_request_obj.total_amount,
-                "recipient":recipient_code,
+               + "recipient":recipient_code,
                 "reference": str(uuid4())}
 
             transfer_response = paystack_instance.initiate_transfer(transfer_ctx)
@@ -77,3 +81,4 @@ class FcInitiateCustomerPaymentInfoSerializer(serializers.Serializer):
                                                                 reference=transfer_ctx.get("transfer_ctx"))
 
             return earning_obj
+            
