@@ -93,12 +93,8 @@ class FcLoginSerializer(serializers.Serializer):
                     raise serializers.ValidationError(_('E-mail is not verified.'))
 
         uidb36 = user_pk_to_url_str(user)
-        rating = FcRating.objects.filter(rated=user)
-        if rating.exists():
-            rating = rating.aggregate(Avg('rating_score'))
-            attrs['user_rating'] = rating.get("rating_score__avg")  
-        else:
-            attrs['user_rating'] = 0.0
+        rating = FcRating.objects.filter(rated=user).aggregate(Avg('rating_score'))
+        attrs['user_rating'] = rating.get("rating_score__avg")        
         attrs['user'] = user
         attrs['uid'] = uidb36
         print('attrs',attrs)
