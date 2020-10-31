@@ -251,7 +251,7 @@ class FcProviderEarnings(ListAPIView):
         context = super().get_serializer_context()
         my_revenue = self.get_queryset().filter(status__in = ('completed', 'paid')).annotate(as_float=Cast('total_amount', FloatField())).aggregate(Sum('as_float'))['as_float__sum']
         context.update({
-            'total_earnings': round(my_revenue,2)
+            'total_earnings': round(my_revenue,2) if my_revenue is not None else 0.0
         })
         return context
 
